@@ -9,19 +9,19 @@ Runda 2 (7 noiembrie 2026), după feedback pe WhatsApp: clientul nu vrea „Sîr
 găsit, descrieri mai bogate și pagini pentru tot ce execută (hidroizolație bituminoasă, sistem pluvial /
 „scocuri”, aticuri, accesorii, consultanță gratuită, transport materiale inclus). Numele propus: HidroAcoperiș
 (hidroacoperis.ro liber la ROTLD; „Acoperișul Sigur SRL” există deja în Mureș, de aceea nu l-am folosit).
-URL-ul demo-ului a rămas `/sira-acoperisuri/`, ca linkul trimis să meargă în continuare.
+Clientul nu vrea „sira” nici în link, așa că repo-ul și adresa au devenit `hidroacoperis` (linkul vechi `/sira-acoperisuri/` nu mai merge).
 
 Paletă: bleumarin `#0f1a2c` pe secțiunile închise, albastru `#1f5fc8` ca accent, verde `#1d8048` doar pe
 butoanele de WhatsApp. Totul în `src/styles/global.css`.
 
-**Demo:** https://demo.mrwebsites.ro/sira-acoperisuri/ (GitHub Pages, repo RTR-TECH-SOLUTIONS/sira-acoperisuri,
+**Demo:** https://demo.mrwebsites.ro/hidroacoperis/ (GitHub Pages, repo RTR-TECH-SOLUTIONS/hidroacoperis,
 publicat la fiecare push pe `main`). Are `noindex` cât e demo.
 
 ## Pornire
 
 ```
 npm install
-npm run dev      # http://localhost:4321/sira-acoperisuri/
+npm run dev      # http://localhost:4321/hidroacoperis/
 npm run build    # static în dist/, merge pe Hostinger
 ```
 

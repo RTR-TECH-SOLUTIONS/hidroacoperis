@@ -1,4 +1,4 @@
-// BASE_URL e "/" pe domeniul clientului și "/sira-acoperisuri/" pe demo.mrwebsites.ro.
+// BASE_URL e "/" pe domeniul clientului și "/hidroacoperis/" pe demo.mrwebsites.ro.
 // u() pune prefixul pe linkurile și pozele interne, ca site-ul să meargă în ambele locuri.
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 export const u = (path: string) => (path === '/' ? `${base}/` : `${base}${path}`);
