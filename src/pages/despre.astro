@@ -3,7 +3,9 @@ import Base from '../layouts/Base.astro';
 import PageHead from '../components/PageHead.astro';
 import Process from '../components/Process.astro';
 import CtaBand from '../components/CtaBand.astro';
+import Icon from '../components/Icon.astro';
 import { site, u } from '../data/site';
+import { services } from '../data/services';
 // TODO(real): povestea reală a firmei, de la Ștefan: de când lucrează, câți oameni are, zona.
 ---
 
@@ -32,10 +34,34 @@ import { site, u } from '../data/site';
           acolo am învățat unde cedează un acoperiș, și asta folosim acum și la cele noi.
         </p>
         <p>
+          Azi facem tot ce ține de acoperiș: reparații, acoperișuri noi și înlocuiri, hidroizolații cu membrană
+          bituminoasă pe terase și garaje, sisteme pluviale, atice și accesorii. Consultanța e gratuită, iar
+          transportul materialelor e inclus în preț.
+        </p>
+        <p>
           Montăm învelitori de la {site.brands.join(', ')}, după instrucțiunile fiecărui producător, ca garanția
           materialului să rămână valabilă.
         </p>
       </div>
+    </div>
+  </section>
+
+  <section class="section work">
+    <div class="wrap">
+      <h2 class="h-section">Ce executăm</h2>
+      <ul>
+        {
+          services.map((x) => (
+            <li>
+              <a href={u(`/servicii/${x.slug}`)}>
+                <span class="w-name">{x.name}</span>
+                <span class="w-short">{x.short}</span>
+                <Icon name="chevron-right" />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
     </div>
   </section>
 
@@ -70,8 +96,49 @@ import { site, u } from '../data/site';
     line-height: 1.5;
     color: var(--color-ink);
   }
+  .work ul {
+    list-style: none;
+    margin: clamp(24px, 4vw, 40px) 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: clamp(24px, 4vw, 56px);
+    border-top: 2px solid var(--color-ink);
+  }
+  .work li {
+    border-bottom: 1px solid var(--color-line);
+  }
+  .work a {
+    display: grid;
+    grid-template-columns: 1fr 20px;
+    gap: 4px 16px;
+    align-items: center;
+    padding: 18px 0;
+    text-decoration: none;
+    color: inherit;
+  }
+  .work a :global(svg) {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    width: 20px;
+    height: 20px;
+    color: var(--color-muted);
+  }
+  .w-name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: var(--color-ink);
+  }
+  .w-short {
+    font-size: 0.9375rem;
+  }
+  .work a:hover .w-name {
+    color: var(--color-accent);
+  }
   @media (max-width: 860px) {
-    .grid {
+    .grid,
+    .work ul {
       grid-template-columns: 1fr;
     }
   }

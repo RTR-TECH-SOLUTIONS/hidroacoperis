@@ -29,6 +29,7 @@ const raw: Service[] = [
     intro: [
       'Cele mai multe reparații pornesc de la o singură țiglă mutată de vânt sau de la un coș etanșat cu silicon. Prinse devreme, costă câteva sute de lei. Lăsate o iarnă, apa ajunge în șipci și apoi în tavan.',
       'Venim, urcăm pe acoperiș și îți arătăm în poze ce am găsit. Abia apoi stabilim ce reparăm, pe bucată, ca să știi dinainte ce plătești.',
+      'Reparăm orice învelitoare: țiglă ceramică și de beton, țiglă metalică, tablă fălțuită sau cutată, șindrilă bituminoasă și terase cu membrană. Venim și pentru o singură țiglă, iar vizita și constatarea sunt gratuite.',
     ],
     includes: [
       'Țigle sparte sau mutate, înlocuite cu prinderi noi',
@@ -56,6 +57,7 @@ const raw: Service[] = [
     intro: [
       'Facem acoperișul complet: pe casă nouă, de la șarpantă, sau în locul unuia vechi, de la demontare. Lucrăm pe apă, așa că seara casa e acoperită, chiar dacă lucrarea durează două săptămâni.',
       'Materialul îl alegi tu, după buget și după cum arată casa. Îți spunem sincer ce se potrivește pe panta și pe șarpanta ta.',
+      'Facem tot ce ține de acoperiș, de la șarpantă la jgheaburi, atice și accesorii, așa că nu cauți trei echipe pentru aceeași casă. Transportul materialelor până la tine e inclus în preț.',
     ],
     includes: [
       'Demontarea acoperișului vechi și evacuarea molozului',
@@ -71,6 +73,33 @@ const raw: Service[] = [
       'Dacă treci de la tablă la ceramică, șarpanta trebuie să ducă de câteva ori mai multă greutate.',
     ],
     projects: ['inlocuire-ceramica', 'macara', 'metalica-antracit'],
+  },
+  {
+    slug: 'hidroizolatii-bituminoase',
+    name: 'Hidroizolații bituminoase',
+    short: 'Terase, acoperișuri plate și garaje, cu membrană aplicată cu flacără.',
+    price: '35–65 lei/m² manoperă',
+    card: { src: '/img/hidro-terasa.webp', w: 1920, h: 1280, alt: 'Acoperiș terasă cu membrană bituminoasă și buteliile de gaz pentru arzător' },
+    hero: { src: '/img/hidro-terasa.webp', w: 1920, h: 1280, alt: 'Acoperiș terasă cu membrană bituminoasă și buteliile de gaz pentru arzător', focus: '50% 55%' },
+    intro: [
+      'Pe un acoperiș plat apa nu se scurge ca pe o pantă, ci stă. O terasă, un garaj sau o anexă au nevoie de o hidroizolație continuă, fără nicio îmbinare deschisă, altfel apa găsește drumul spre tavan.',
+      'Lucrăm cu membrană bituminoasă aplicată cu flacără, în două straturi: primul lipit pe suportul amorsat, al doilea cu ardezie, care o apără de soare. Îmbinările se suprapun cu cel puțin 10 cm și se topesc pe toată lățimea, nu doar pe margine.',
+      'Pe acoperișurile în pantă montăm și șindrilă bituminoasă, pe astereală din OSB și membrană de bază.',
+    ],
+    includes: [
+      'Curățarea suportului și scoaterea membranei vechi, unde s-a umflat',
+      'Amorsă bituminoasă pe beton sau pe șapă',
+      'Membrană în două straturi, a doua cu ardezie',
+      'Racorduri la atice, coșuri și guri de scurgere, urcate pe perete cel puțin 15 cm',
+      'Guri de scurgere și preaplinuri noi',
+      'Probă cu apă la final, acolo unde se poate',
+    ],
+    watch: [
+      'Membrana pusă peste una veche umflată prinde aer dedesubt și face bășici din prima vară.',
+      'Cele mai multe infiltrații la terase nu apar în mijloc, ci la racordul cu aticul și la gurile de scurgere.',
+      'O terasă perfect orizontală ține bălți. Panta de 1–2% spre scurgere se face din șapă, înainte de membrană.',
+    ],
+    projects: ['terasa-bloc', 'atic-casa', 'sindrila'],
   },
   {
     slug: 'tigla-metalica',
@@ -145,21 +174,22 @@ const raw: Service[] = [
     projects: ['faltuita-gri', 'faltuita-maro'],
   },
   {
-    slug: 'jgheaburi-burlane',
-    name: 'Jgheaburi, burlane și accesorii',
-    short: 'Pantă refăcută spre burlan, cârlige la fiecare 60 cm.',
+    slug: 'sisteme-pluviale',
+    name: 'Sisteme pluviale',
+    short: 'Jgheaburi și burlane (scocuri), cu pantă refăcută și cârlige la fiecare 60 cm.',
     price: '45–130 lei/ml',
     card: { src: '/img/srv-jgheaburi.webp', w: 933, h: 1400, alt: 'Jgheab alb din care picură apă' },
     hero: { src: '/img/srv-jgheaburi.webp', w: 933, h: 1400, alt: 'Jgheab alb din care picură apă', focus: '50% 28%' },
     intro: [
-      'Un jgheab fără pantă ține apa la colț, iarna îngheață și se rupe. Apa care curge pe perete strică tencuiala și, cu timpul, fundația.',
-      'Schimbăm sistemul pluvial complet sau doar bucățile rupte, desfundăm burlanele și montăm parazăpezi, ca zăpada să nu rupă jgheabul primăvara.',
+      'Jgheaburile, sau scocurile, cum li se spune în multe zone, duc apa de pe acoperiș departe de casă. Un jgheab fără pantă ține apa la colț, iarna îngheață și se rupe, iar apa care curge pe perete strică tencuiala și, cu timpul, fundația.',
+      'Montăm sistemul pluvial complet sau schimbăm doar bucățile rupte: jgheaburi, burlane, coturi, colțare și racorduri la canalizare. Desfundăm burlanele și punem site contra frunzelor, ca apa să curgă și toamna.',
     ],
     includes: [
-      'Jgheaburi și burlane din tablă sau PVC',
+      'Jgheaburi și burlane din tablă vopsită sau PVC',
       'Cârlige noi, la cel mult 60 cm',
       'Pantă refăcută spre fiecare burlan',
-      'Parazăpezi și site contra frunzelor',
+      'Racord la canalizare sau la rigolă',
+      'Site contra frunzelor și parazăpezi deasupra jgheabului',
     ],
     watch: [
       'Cârligele puse prea rar lasă jgheabul să se încovoaie sub zăpadă.',
@@ -167,6 +197,57 @@ const raw: Service[] = [
       'Parazăpezile se pun pe toată lungimea, nu doar deasupra intrării.',
     ],
     projects: ['jgheaburi'],
+  },
+  {
+    slug: 'aticuri',
+    name: 'Aticuri și copertine',
+    short: 'Atice refăcute, cu copertină din tablă și racord etanș la hidroizolație.',
+    price: '70–140 lei/ml',
+    card: { src: '/img/atic-casa.webp', w: 1920, h: 1280, alt: 'Casă modernă cu acoperiș terasă și atice albe' },
+    hero: { src: '/img/atic-casa.webp', w: 1920, h: 1280, alt: 'Casă modernă cu acoperiș terasă și atice albe', focus: '50% 40%' },
+    intro: [
+      'Aticul e zidul scund de pe marginea unei terase sau a unei case cu acoperiș ascuns. E partea cea mai expusă: îl bate ploaia din trei părți, iar apa care intră pe sus coboară prin zid și iese ca pată pe fațadă sau pe tavanul de sub el.',
+      'Îl acoperim cu copertină din tablă vopsită, cu pantă spre terasă și picurător pe ambele fețe. Hidroizolația terasei o urcăm pe atic și o prindem sub copertină, ca apa să nu aibă pe unde intra între ele.',
+    ],
+    includes: [
+      'Demontarea copertinei vechi sau a glafurilor de ciment fisurate',
+      'Suport din lemn tratat sau OSB, cu pantă spre terasă',
+      'Copertină din tablă vopsită, pe culoarea tâmplăriei sau a acoperișului',
+      'Racordul hidroizolației, urcat pe atic și prins sub copertină',
+      'Îmbinări fălțuite sau cu eclisă, nu cu silicon',
+    ],
+    watch: [
+      'O copertină orizontală ține apa deasupra zidului. Cu pantă spre terasă, apa ajunge unde trebuie.',
+      'Picurătorul de pe fața exterioară trebuie să iasă cel puțin 3 cm din zid, altfel apa curge pe tencuială și lasă dungi.',
+      'Siliconul de la îmbinări crapă după câteva ierni. Fălțul sau eclisa cu garnitură rămân etanșe.',
+    ],
+    projects: ['atic-casa', 'terasa-bloc'],
+  },
+  {
+    slug: 'accesorii-acoperis',
+    name: 'Accesorii de acoperiș',
+    short: 'Ferestre de mansardă, parazăpezi, aerisitoare și trepte de acces.',
+    price: 'după accesoriu',
+    card: { src: '/img/acc-fereastra.webp', w: 1920, h: 1280, alt: 'Fereastră de mansardă și aerisitor pe un acoperiș din țiglă ceramică roșie' },
+    hero: { src: '/img/acc-fereastra.webp', w: 1920, h: 1280, alt: 'Fereastră de mansardă și aerisitor pe un acoperiș din țiglă ceramică roșie' },
+    intro: [
+      'Accesoriile sunt piesele mici de care depinde dacă un acoperiș ține: parazăpezile opresc zăpada să rupă jgheabul, aerisitoarele scot aburul din pod, iar o fereastră de mansardă montată cu rama ei nu lasă apă nici după 20 de ani.',
+      'Le montăm pe acoperișurile noi, dar și separat, pe acoperișul pe care îl ai deja. Folosim accesoriile producătorului învelitorii, ca să se potrivească pe profil și să nu pierzi garanția.',
+    ],
+    includes: [
+      'Ferestre de mansardă, cu rama de etanșare a producătorului',
+      'Parazăpezi din țeavă sau grilaj, pe toată lungimea streșinii',
+      'Aerisitoare și țigle de ventilare pentru pod',
+      'Trepte și podeste pentru coșar',
+      'Treceri prin acoperiș pentru hotă, centrală sau antenă',
+      'Bandă de coamă ventilată și pieptene de streașină contra păsărilor',
+    ],
+    watch: [
+      'Un pod fără aerisire face condens iarna, iar apa picură din folie ca și cum ar curge acoperișul.',
+      'Parazăpezile se prind în căpriori sau în șipci întărite, nu doar în tablă.',
+      'Trecerea pentru hotă sau centrală se face cu piesa producătorului, nu cu o gaură umplută cu spumă.',
+    ],
+    projects: ['sindrila', 'mansarda'],
   },
   {
     slug: 'dulgherie-sarpante',

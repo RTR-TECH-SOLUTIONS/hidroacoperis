@@ -1,0 +1,226 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Icon from '../components/Icon.astro';
+import { u, waLink } from '../data/site';
+// TODO(real): zona în care vizita e gratuită și în cât timp ajunge clientul, de la Ștefan.
+
+const checks = [
+  ['Învelitoarea', 'țigle sparte sau mutate, tablă ruginită, șuruburi slăbite, foi ridicate la margine'],
+  ['Coama și doliile', 'mortar crăpat, bandă de coamă lipsă, locurile unde se adună apa'],
+  ['Coșul de fum', 'șorțul din tablă, siliconul vechi, tencuiala coșului deasupra acoperișului'],
+  ['Jgheaburile și burlanele', 'panta spre burlan, cârligele, îmbinările, burlanele înfundate'],
+  ['Podul', 'șarpanta, folia, urmele de apă pe lemn și dacă podul are aerisire'],
+  ['Terasele și aticele', 'bășici în membrană, racordul la atic, gurile de scurgere, bălțile rămase'],
+];
+
+const after = [
+  ['Pozele cu ce am găsit', 'pe WhatsApp, în aceeași zi, cu locul fiecărei probleme marcat.'],
+  ['Devizul scris, pe rânduri', 'manopera separat de material, cu marca și cantitatea fiecărui material.'],
+  ['Recomandarea noastră', 'reparație sau acoperiș nou, cu motivul. Dacă se poate repara, îți spunem.'],
+  ['Data la care putem începe', 'și câte zile lucrătoare durează, trecute în contract.'],
+];
+
+const wa = waLink('Bună ziua! Aș vrea să veniți să vedeți acoperișul. Adresa este: __');
+---
+
+<Base
+  title="Consultanță gratuită"
+  overlay
+  description="Venim, urcăm pe acoperiș și îți spunem ce e de făcut, cu poze și deviz scris. Deplasarea, măsurătorile și transportul materialelor nu se plătesc separat."
+>
+  <PageHead
+    title="Consultanță gratuită"
+    lead="Venim, urcăm pe acoperiș și îți spunem ce e de făcut, cu poze și deviz scris. Nu plătești deplasarea și nici măsurătorile, chiar dacă nu lucrăm până la urmă."
+    img={{ src: u('/img/sindrila-echipa.webp'), w: 1400, h: 933, alt: '', focus: '50% 30%' }}
+    crumbs={[{ href: '/consultanta-gratuita', label: 'Consultanță gratuită' }]}
+    ctas
+  />
+
+  <section class="section checks">
+    <div class="wrap grid">
+      <div class="side">
+        <h2 class="h-section">Ce verificăm când venim</h2>
+        <p class="lead">
+          Urcăm pe acoperiș, nu ne uităm doar de jos. Durează cam o oră la o casă obișnuită, și mai mult dacă
+          intrăm și în pod.
+        </p>
+      </div>
+      <dl class="list">
+        {
+          checks.map(([t, d]) => (
+            <div>
+              <dt>{t}</dt>
+              <dd>{d}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <section class="section after">
+    <div class="wrap grid">
+      <h2 class="h-section">Ce primești după vizită</h2>
+      <ol>
+        {
+          after.map(([t, d], i) => (
+            <li>
+              <span class="n num">{i + 1}</span>
+              <p>
+                <strong>{t}</strong>, {d}
+              </p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section transport">
+    <div class="wrap grid">
+      <figure class="figure">
+        <div class="photo">
+          <img
+            src={u('/img/l-macara.webp')}
+            width="1200"
+            height="960"
+            alt="Materiale de acoperiș ridicate cu macaraua pe o casă în lucru"
+            loading="lazy"
+          />
+        </div>
+      </figure>
+      <div class="text">
+        <h2 class="h-section">Transportul materialelor e inclus</h2>
+        <p class="first">
+          Materialul îl comanzi prin noi, la prețul distribuitorului și cu factura pe numele tău, sau îl iei singur
+          după lista pe care ți-o dăm.
+        </p>
+        <p>
+          Dacă îl comanzi prin noi, îl aducem până în curte și, la acoperișurile întregi, îl urcăm pe acoperiș.
+          Transportul nu apare ca rând separat pe deviz.
+        </p>
+        <div class="actions">
+          <a class="btn btn-wa" href={wa} target="_blank" rel="noopener"><Icon name="whatsapp" /> Cere o vizită</a>
+          <a class="btn btn-line" href={u('/preturi')}>Socotește întâi pe site <Icon name="chevron-right" /></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand title="Nu știi dacă merită să venim?" text="Trimite-ne 2–3 poze înainte. Îți spunem din ele dacă e o reparație de o zi sau ceva mai mare." />
+</Base>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(32px, 6vw, 88px);
+    align-items: start;
+  }
+  .checks {
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-line);
+  }
+  .side .lead {
+    margin-top: 18px;
+  }
+  .list {
+    margin: 0;
+    border-top: 2px solid var(--color-ink);
+  }
+  .list > div {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    gap: 8px 24px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .list dt {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--color-ink);
+  }
+  .list dd {
+    margin: 0;
+  }
+
+  .after {
+    background: var(--color-slate);
+    color: var(--color-slate-text);
+  }
+  .after h2 {
+    color: #fff;
+  }
+  .after .grid {
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+  }
+  .after ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 2px solid var(--color-accent-bright);
+  }
+  .after li {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 12px;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--color-slate-line);
+  }
+  .after .n {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 2rem;
+    line-height: 1;
+    color: var(--color-accent-bright);
+  }
+  .after p {
+    font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.1875rem);
+    color: #e6ebf2;
+  }
+  .after strong {
+    color: #fff;
+  }
+
+  .transport .grid {
+    grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
+    align-items: center;
+  }
+  .figure {
+    margin: 0;
+  }
+  .figure .photo {
+    aspect-ratio: 5 / 4;
+  }
+  .text p {
+    margin-top: 16px;
+    max-width: 58ch;
+  }
+  .text .first {
+    margin-top: 22px;
+    font-size: clamp(1.125rem, 1rem + 0.5vw, 1.375rem);
+    line-height: 1.5;
+    color: var(--color-ink);
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 28px;
+  }
+
+  @media (max-width: 900px) {
+    .grid,
+    .after .grid,
+    .transport .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 560px) {
+    .list > div {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

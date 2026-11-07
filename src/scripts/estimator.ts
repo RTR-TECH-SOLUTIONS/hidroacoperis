@@ -14,6 +14,7 @@ type Data = {
     pluvialMat: Range;
     accesoriiPct: number;
   };
+  flatPrices: { scoatere: Range; montaj: Range; membranaMat: Range; aticMontaj: Range; aticMat: Range };
   repairs: { id: string; label: string; unit: string; price: Range; step: number; max: number }[];
   whatsapp: string;
   firm: string;
@@ -29,11 +30,13 @@ const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
 const jobLabels: Record<string, string> = {
   nou: 'Acoperiș nou',
   inlocuire: 'Înlocuire acoperiș vechi',
+  terasa: 'Hidroizolație terasă',
   reparatie: 'Reparație',
 };
 
 const FLOWS: Record<string, string[]> = {
   surface: ['job', 'material', 'brand', 'dims', 'result'],
+  flat: ['job', 'flat', 'result'],
   repair: ['job', 'repairs', 'result'],
 };
 
@@ -57,7 +60,11 @@ export function initEstimator() {
   const picks = $('[data-picks]')!;
 
   let index = 0;
-  const flow = () => (val('job') === 'reparatie' ? FLOWS.repair : FLOWS.surface);
+  const flow = () => {
+    const job = val('job');
+    return job === 'reparatie' ? FLOWS.repair : job === 'terasa' ? FLOWS.flat : FLOWS.surface;
+  };
+  const flat = () => ({ area: Number(val('flat')), old: val('flatOld') === 'scoatem', atic: Number(val('atic')) });
 
   const dims = () => {
     const L = Number(val('len'));
@@ -89,7 +96,12 @@ export function initEstimator() {
   const renderPicks = () => {
     const job = val('job');
     const rows: [string, string][] = [['Lucrare', jobLabels[job]]];
-    if (job !== 'reparatie') {
+    if (job === 'terasa') {
+      const f = flat();
+      rows.push(['Suprafața', `${nf.format(f.area)} m²`]);
+      rows.push(['Acum pe terasă', f.old ? 'membrană veche, o scoatem' : 'beton sau șapă curată']);
+      rows.push(['Atice', f.atic ? `${f.atic} ml, cu copertină` : 'nu']);
+    } else if (job !== 'reparatie') {
       const mat = data.materials[val('material')];
       const b = brandOf(val('material'));
       const d = dims();
@@ -110,6 +122,8 @@ export function initEstimator() {
     $('[data-out="wid"]', form)!.textContent = `${nf.format(d.W)} m`;
     $('[data-out="slope"]', form)!.textContent = `${d.slope}°`;
     $('[data-area-live]', form)!.textContent = `${nf.format(d.area)} m²`;
+    $('[data-out="flat"]', form)!.textContent = `${nf.format(Number(val('flat')))} m²`;
+    $('[data-out="atic"]', form)!.textContent = `${val('atic')} ml`;
     form.querySelectorAll<HTMLInputElement>('input[type="range"]').forEach((r) => {
       const p = ((Number(r.value) - Number(r.min)) / (Number(r.max) - Number(r.min))) * 100;
       r.style.setProperty('--p', `${p}%`);
@@ -133,7 +147,52 @@ export function initEstimator() {
     $('[data-date]', form)!.textContent = date;
     const sp = data.surfacePrices;
 
-    if (job === 'reparatie') {
+    if (job === 'terasa') {
+      const fp = data.flatPrices;
+      const f = flat();
+      const lab = {
+        scoatere: f.old ? mul(fp.scoatere, f.area) : ([0, 0] as Range),
+        montaj: mul(fp.montaj, f.area),
+        atic: mul(fp.aticMontaj, f.atic),
+      };
+      const mt = { membrana: mul(fp.membranaMat, f.area), atic: mul(fp.aticMat, f.atic) };
+      const labTotal = add(lab.scoatere, lab.montaj, lab.atic);
+      const matTotal = add(mt.membrana, mt.atic);
+      const total = add(labTotal, matTotal);
+      $('[data-summary]', form)!.textContent = `Hidroizolație terasă · ${nf.format(f.area)} m²${f.atic ? ` · ${f.atic} ml de atic` : ''}`;
+      const labRows = [
+        f.old ? row('Scoaterea membranei vechi, cu molozul', rate(fp.scoatere, 'm²'), money(lab.scoatere)) : '',
+        row('Amorsă și membrană în două straturi', rate(fp.montaj, 'm²'), money(lab.montaj)),
+        f.atic ? row(`Atice refăcute, ${f.atic} ml`, rate(fp.aticMontaj, 'ml'), money(lab.atic)) : '',
+        subRow('Manoperă', money(labTotal)),
+      ];
+      const matRows = [
+        row('Amorsă, membrană de bază și membrană cu ardezie', rate(fp.membranaMat, 'm²'), money(mt.membrana)),
+        f.atic ? row(`Copertină din tablă vopsită, ${f.atic} ml`, rate(fp.aticMat, 'ml'), money(mt.atic)) : '',
+        subRow('Material', money(matTotal)),
+      ];
+      body.innerHTML = `
+        <div class="area">
+          <p>Suprafața terasei</p>
+          <p class="area-num num">${nf.format(f.area)} m²</p>
+          <p class="area-formula">${f.old ? 'cu membrana veche scoasă' : 'pe suport curat'}${f.atic ? `, plus ${f.atic} ml de atic` : ''}</p>
+        </div>
+        <table class="rows"><caption>Manoperă</caption><tbody>${labRows.join('')}</tbody></table>
+        <table class="rows"><caption>Material</caption><tbody>${matRows.join('')}</tbody></table>`;
+      $('[data-total-label]', form)!.textContent = 'Total cu material';
+      $('[data-total]', form)!.textContent = money(total);
+      $('[data-note]', form)!.textContent =
+        'Prețuri orientative. Dacă terasa nu are pantă spre scurgeri, șapa de pantă o socotim separat, după ce o vedem.';
+      waText = [
+        'Bună ziua! Am socotit pe site o hidroizolație de terasă:',
+        `Suprafață: ${nf.format(f.area)} m², ${f.old ? 'cu membrana veche de scos' : 'pe beton sau șapă curată'}`,
+        ...(f.atic ? [`Atice: ${f.atic} ml, cu copertină`] : []),
+        `Manoperă: ${money(labTotal)}`,
+        `Material: ${money(matTotal)}`,
+        `Total: ${money(total)}`,
+        'Vă trimit și câteva poze.',
+      ].join('\n');
+    } else if (job === 'reparatie') {
       const chosen = repairQty().filter((r) => r.qty);
       $('[data-summary]', form)!.textContent = 'Reparație, socotită pe bucată';
       if (!chosen.length) {

@@ -67,6 +67,15 @@ export const surfacePrices = {
   accesoriiPct: 0.12, // coame, borduri, șuruburi: cam 12% din învelitoare
 };
 
+// Terase, garaje și acoperișuri plate: membrană bituminoasă în două straturi.
+export const flatPrices = {
+  scoatere: [10, 20] as Range, // lei/m², membrana veche scoasă și dusă
+  montaj: [35, 65] as Range, // lei/m², amorsă + două straturi
+  membranaMat: [40, 62] as Range, // lei/m², amorsă + membrană de bază + membrană cu ardezie
+  aticMontaj: [70, 140] as Range, // lei/ml
+  aticMat: [55, 95] as Range, // lei/ml, copertină din tablă vopsită + racord
+};
+
 export type RepairItem = {
   id: string;
   label: string;

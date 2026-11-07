@@ -1,5 +1,5 @@
 import { u } from './site';
-// Hero în formatul reelului: un serviciu pe cadru, „Serviciul 0X din 08”.
+// Hero în formatul reelului: un serviciu pe cadru.
 // TODO(real): pozele (sau clipurile) clientului de pe lucrările lui.
 export type HeroSlide = {
   title: string;
@@ -20,6 +20,15 @@ const raw: HeroSlide[] = [
     h: 1280,
     alt: 'Doi acoperișari care lucrează pe un acoperiș din țiglă',
     focus: '50% 35%',
+  },
+  {
+    title: 'Hidroizolații bituminoase',
+    sub: 'Terase, garaje și acoperișuri plate, cu membrană în două straturi.',
+    img: '/img/hidro-terasa.webp',
+    w: 1920,
+    h: 1280,
+    alt: 'Acoperiș terasă cu membrană bituminoasă și buteliile de gaz pentru arzător',
+    focus: '50% 55%',
   },
   {
     title: 'Montaj țiglă metalică',
@@ -55,13 +64,22 @@ const raw: HeroSlide[] = [
     alt: 'Acoperiș din tablă fălțuită maro cu fereastră în pantă',
   },
   {
-    title: 'Jgheaburi, burlane și accesorii',
-    sub: 'Pantă refăcută spre burlan, cârlige la fiecare 60 cm.',
+    title: 'Sisteme pluviale',
+    sub: 'Jgheaburi și burlane (scocuri), cu pantă refăcută spre burlan.',
     img: '/img/srv-jgheaburi.webp',
     w: 933,
     h: 1400,
     alt: 'Jgheab alb din care picură apă',
     focus: '50% 28%',
+  },
+  {
+    title: 'Aticuri și copertine',
+    sub: 'Copertină din tablă cu pantă spre terasă, racord etanș la hidroizolație.',
+    img: '/img/atic-casa.webp',
+    w: 1920,
+    h: 1280,
+    alt: 'Casă modernă cu acoperiș terasă și atice albe',
+    focus: '50% 40%',
   },
   {
     title: 'Dulgherie de la A la Z',

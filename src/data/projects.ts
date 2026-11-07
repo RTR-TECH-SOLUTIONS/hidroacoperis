@@ -1,12 +1,13 @@
 import { u } from './site';
 // Lucrări afișate în galerie. TODO(real): pozele și datele lucrărilor clientului.
-export type Category = 'reparatii' | 'noi' | 'inlocuiri' | 'dulgherie';
+export type Category = 'reparatii' | 'noi' | 'inlocuiri' | 'hidro' | 'dulgherie';
 
 export const categories: { id: Category | 'toate'; label: string }[] = [
   { id: 'toate', label: 'Toate' },
   { id: 'reparatii', label: 'Reparații' },
   { id: 'noi', label: 'Acoperișuri noi' },
   { id: 'inlocuiri', label: 'Înlocuiri' },
+  { id: 'hidro', label: 'Hidroizolații și atice' },
   { id: 'dulgherie', label: 'Dulgherie și mansarde' },
 ];
 
@@ -172,6 +173,35 @@ const raw: Project[] = [
     size: 'wide',
     photos: [
       { src: '/img/l-sindrila.webp', w: 1400, h: 933, alt: 'Acoperiș din șindrilă închisă la culoare cu două ferestre roșii' },
+      { src: '/img/sindrila-echipa.webp', w: 1400, h: 933, alt: 'Doi acoperișari legați în ham care montează șindrilă bituminoasă' },
+    ],
+  },
+  {
+    id: 'terasa-bloc',
+    title: 'Terasă de bloc refăcută cu membrană în două straturi',
+    category: 'hidro',
+    meta: ['420 m²', 'membrană cu ardezie', '6 zile'],
+    status: 'gata',
+    year: 2025,
+    note: 'Am scos membrana veche doar unde se umflase, am amorsat tot și am refăcut racordurile la atic și la cele patru guri de scurgere.',
+    size: 'wide',
+    photos: [
+      { src: '/img/hidro-bloc.webp', w: 1400, h: 859, alt: 'Terasă de bloc cu hidroizolație deschisă la culoare, văzută de sus' },
+      { src: '/img/hidro-terasa.webp', w: 1920, h: 1280, alt: 'Membrană bituminoasă pe terasă și buteliile de gaz pentru arzător' },
+    ],
+  },
+  {
+    id: 'atic-casa',
+    title: 'Atice cu copertină din tablă la o casă cu acoperiș terasă',
+    category: 'hidro',
+    meta: ['64 ml de atic', 'copertină din tablă vopsită', '4 zile'],
+    status: 'gata',
+    year: 2025,
+    note: 'Glafurile de ciment crăpaseră și apa ieșea pe fațadă. Le-am înlocuit cu copertină cu pantă spre terasă și am urcat membrana pe atic.',
+    size: 'wide',
+    photos: [
+      { src: '/img/atic-casa.webp', w: 1920, h: 1280, alt: 'Casă modernă cu acoperiș terasă și atice albe' },
+      { src: '/img/atic-casa-2.webp', w: 1400, h: 933, alt: 'Casă joasă cu acoperiș plat și atice, văzută din stradă' },
     ],
   },
   {

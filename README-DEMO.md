@@ -1,9 +1,15 @@
-# Sîra Acoperișuri — demo de prezentare
+# HidroAcoperiș — demo de prezentare
 
 Client: Sira Stefan (WhatsApp +40 753 771 370), reparații de acoperiș și acoperișuri noi, primul site.
 Referința trimisă de client: reelul Facebook al Acoperiș Direct („Serviciul 01 din 08”) și site-ul
 acoperisdirect.ro. Hero-ul reia formatul și culorile reelului (bleumarin, albastru, linia verde); restul
 structurii e în spiritul site-ului, nu o copie.
+
+Runda 2 (7 noiembrie 2026), după feedback pe WhatsApp: clientul nu vrea „Sîra” în nume și vrea un nume ușor de
+găsit, descrieri mai bogate și pagini pentru tot ce execută (hidroizolație bituminoasă, sistem pluvial /
+„scocuri”, aticuri, accesorii, consultanță gratuită, transport materiale inclus). Numele propus: HidroAcoperiș
+(hidroacoperis.ro liber la ROTLD; „Acoperișul Sigur SRL” există deja în Mureș, de aceea nu l-am folosit).
+URL-ul demo-ului a rămas `/sira-acoperisuri/`, ca linkul trimis să meargă în continuare.
 
 Paletă: bleumarin `#0f1a2c` pe secțiunile închise, albastru `#1f5fc8` ca accent, verde `#1d8048` doar pe
 butoanele de WhatsApp. Totul în `src/styles/global.css`.
@@ -21,21 +27,25 @@ npm run build    # static în dist/, merge pe Hostinger
 
 ## Pagini
 
-- `/`: hero în formatul reelului (8 servicii, swipe pe telefon și tragere cu mouse-ul pe PC, fără săgeți),
+- `/`: hero în formatul reelului (10 servicii, swipe pe telefon și tragere cu mouse-ul pe PC, fără săgeți),
+  bandă „Inclus, fără cost separat” (consultanță, transport, deviz, garanție),
   „Ce se întâmplă cu acoperișul?” (fiecare problemă deschide WhatsApp cu mesajul scris), servicii, bandă spre
   calculator, 6 lucrări, cum lucrăm, întrebări, contact.
-- `/servicii` și `/servicii/<slug>` (8 pagini): ce intră în lucrare, preț de manoperă, „La ce să fii atent”,
+- `/servicii` și `/servicii/<slug>` (11 pagini, noi: hidroizolații bituminoase, aticuri, accesorii; jgheaburile
+  au devenit „Sisteme pluviale”): ce intră în lucrare, preț de manoperă, „La ce să fii atent”,
   lucrările legate, alte servicii.
 - `/preturi`: calculator pas cu pas. Acoperiș nou / înlocuire: învelitoare, marcă, dimensiuni, apoi devizul
-  cu manoperă + material pe marcă (Bilka, Wetterbest, Lindab, Bramac, Tondach, Creaton). Reparație: pe bucată.
+  cu manoperă + material pe marcă (Bilka, Wetterbest, Lindab, Bramac, Tondach, Creaton). Hidroizolație terasă:
+  suprafață, membrana veche, atice. Reparație: pe bucată.
   Devizul se trimite pe WhatsApp sau se printează. Dedesubt, „Se repară sau se schimbă?”.
 - `/lucrari`: toate lucrările, cu filtre și lightbox.
-- `/despre`: echipa (text provizoriu) + cum lucrăm + ce scrie în contract.
+- `/consultanta-gratuita`: ce verificăm la vizită, ce primești după, transportul materialelor.
+- `/despre`: echipa (text provizoriu), „Ce executăm” cu toate serviciile, cum lucrăm, ce scrie în contract.
 - `/contact`: telefon, WhatsApp, formular (deschide WhatsApp), întrebări.
 
 ## Ce e doar mock (caută `TODO(real)`)
 
-- `src/data/site.ts`: numele firmei („Sîra Acoperișuri” e propunerea noastră), zona, programul.
+- `src/data/site.ts`: numele firmei („HidroAcoperiș” e propunerea noastră, de confirmat), zona, programul.
 - `src/data/prices.ts`: manopera și prețurile de material pe mărci sunt orientative, de înlocuit cu ale
   clientului și ale distribuitorului cu care lucrează.
 - `src/pages/despre.astro`: textul despre echipă e scris de noi, de înlocuit cu povestea reală.

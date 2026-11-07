@@ -1,9 +1,9 @@
 ---
 import Icon from './Icon.astro';
-import { materials, surfacePrices, repairs } from '../data/prices';
+import { materials, surfacePrices, flatPrices, repairs } from '../data/prices';
 import { site } from '../data/site';
 
-const data = { materials, surfacePrices, repairs, whatsapp: site.whatsapp, firm: site.name };
+const data = { materials, surfacePrices, flatPrices, repairs, whatsapp: site.whatsapp, firm: site.name };
 const fmt = (n: number) => new Intl.NumberFormat('ro-RO').format(n);
 const matEntries = Object.entries(materials);
 ---
@@ -27,6 +27,10 @@ const matEntries = Object.entries(materials);
             <label class="choice">
               <input type="radio" name="job" value="inlocuire" />
               <span class="c-body"><span class="c-t">Înlocuire acoperiș vechi</span><span class="c-d">Dăm jos ce e și facem din nou</span></span>
+            </label>
+            <label class="choice">
+              <input type="radio" name="job" value="terasa" />
+              <span class="c-body"><span class="c-t">Hidroizolație terasă</span><span class="c-d">Terasă, garaj sau anexă cu acoperiș plat</span></span>
             </label>
             <label class="choice">
               <input type="radio" name="job" value="reparatie" />
@@ -118,6 +122,33 @@ const matEntries = Object.entries(materials);
           <p class="area-live">Cam <strong class="num" data-area-live>175 m²</strong> de acoperiș</p>
         </fieldset>
 
+        <fieldset class="step" data-step="flat" hidden>
+          <legend class="q">Cât de mare e terasa?</legend>
+          <p class="hint">Suprafața de deasupra, fără atice. Panta spre scurgeri și gurile de scurgere le vedem când venim.</p>
+
+          <div class="range">
+            <div class="range-top">
+              <label for="flat">Suprafața terasei</label>
+              <output for="flat" class="num" data-out="flat">60 m²</output>
+            </div>
+            <input id="flat" name="flat" type="range" min="10" max="500" step="5" value="60" />
+          </div>
+
+          <p class="sub-q">Ce e acum pe terasă?</p>
+          <div class="seg-row">
+            <label><input type="radio" name="flatOld" value="scoatem" checked /><span>Membrană veche, umflată</span></label>
+            <label><input type="radio" name="flatOld" value="curat" /><span>Beton sau șapă curată</span></label>
+          </div>
+
+          <div class="range">
+            <div class="range-top">
+              <label for="atic">Atice de refăcut, cu copertină</label>
+              <output for="atic" class="num" data-out="atic">0 ml</output>
+            </div>
+            <input id="atic" name="atic" type="range" min="0" max="120" step="1" value="0" />
+          </div>
+        </fieldset>
+
         <fieldset class="step" data-step="repairs" hidden>
           <legend class="q">Ce e de reparat?</legend>
           <p class="hint">
@@ -169,6 +200,7 @@ const matEntries = Object.entries(materials);
               <p class="total-num" data-total></p>
             </div>
             <p class="note" data-note></p>
+            <p class="incl">Fără cost: vizita, măsurătorile și transportul materialelor până la tine.</p>
             <div class="sheet-actions no-print">
               <a class="btn btn-wa" href="#" target="_blank" rel="noopener" data-wa>
                 <Icon name="whatsapp" /> Trimite devizul pe WhatsApp
@@ -670,6 +702,18 @@ const matEntries = Object.entries(materials);
     font-size: 0.875rem;
     color: var(--color-muted);
     max-width: 62ch;
+  }
+  .incl {
+    margin-top: 6px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+  .sub-q {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--color-ink);
+    margin: 4px 0 10px;
   }
   .sheet-actions {
     display: flex;

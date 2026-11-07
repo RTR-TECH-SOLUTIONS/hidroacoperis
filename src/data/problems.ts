@@ -21,6 +21,12 @@ export const problems: Problem[] = [
       'Bună ziua! Intră apă pe lângă coșul de fum. Vă trimit poze cu coșul și din pod.',
   },
   {
+    title: 'Plouă prin terasă sau prin garaj',
+    detail: 'Pete pe tavanul de sub terasă, bășici în membrană sau apă care stă după ploaie.',
+    message:
+      'Bună ziua! Îmi intră apă prin terasă (sau garaj). Suprafața e de aproximativ __ m². Vă trimit poze.',
+  },
+  {
     title: 'Jgheab rupt sau înfundat',
     detail: 'Apa curge pe perete, pe lângă burlan sau stă în jgheab după ploaie.',
     message:
