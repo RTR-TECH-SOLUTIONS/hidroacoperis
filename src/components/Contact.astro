@@ -1,0 +1,267 @@
+---
+import Icon from './Icon.astro';
+import { site, waDefault, u } from '../data/site';
+
+interface Props {
+  /** pe /contact secțiunea e chiar capul paginii (h1, sub header-ul transparent) */
+  asPage?: boolean;
+}
+const { asPage = false } = Astro.props;
+const Heading = asPage ? 'h1' : 'h2';
+const jobs = ['Reparație', 'Acoperiș nou', 'Înlocuire acoperiș vechi', 'Jgheaburi', 'Mansardă sau izolație', 'Altceva'];
+---
+
+<section class:list={['section contact', asPage && 'as-page']} id="contact" data-overlay-hero={asPage ? '' : undefined}>
+  <div class="wrap grid">
+    <div class="left">
+      {
+        asPage && (
+          <nav class="crumbs" aria-label="Unde ești">
+            <a href={u('/')}>Acasă</a> <span aria-hidden="true">/</span> <a href={u('/contact')}>Contact</a>
+          </nav>
+        )
+      }
+      <Heading class="h-section">Trimite-ne poze cu acoperișul</Heading>
+      <p class="lead">
+        Îți răspundem pe WhatsApp sau te sunăm înapoi și îți spunem ce e de făcut. Dacă e o reparație mică și
+        suntem prin zonă, putem veni chiar în aceeași zi.
+      </p>
+
+      <a class="phone num" href={site.phoneHref}>{site.phoneDisplay}</a>
+      <p class="hours">{site.hours}. {site.area}</p>
+      <div class="ctas">
+        <a class="btn btn-wa" href={waDefault} target="_blank" rel="noopener">
+          <Icon name="whatsapp" /> Scrie-ne pe WhatsApp
+        </a>
+        <a class="btn btn-line-light" href={site.phoneHref}><Icon name="phone" /> Sună acum</a>
+      </div>
+    </div>
+
+    <form class="form" data-contact-form novalidate>
+      <p class="form-title">Sau lasă-ne datele și te sunăm noi</p>
+      <div class="field">
+        <label for="c-name">Numele tău</label>
+        <input id="c-name" name="name" type="text" autocomplete="name" required />
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="c-phone">Telefon</label>
+          <input id="c-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required />
+        </div>
+        <div class="field">
+          <label for="c-place">Localitatea</label>
+          <input id="c-place" name="place" type="text" autocomplete="address-level2" required />
+        </div>
+      </div>
+      <div class="field">
+        <label for="c-job">Ce lucrare e</label>
+        <select id="c-job" name="job">
+          {jobs.map((j) => <option>{j}</option>)}
+        </select>
+      </div>
+      <div class="field">
+        <label for="c-msg">Câteva cuvinte despre acoperiș <span class="opt">(opțional)</span></label>
+        <textarea id="c-msg" name="msg" rows="3"></textarea>
+      </div>
+      <p class="error" data-error role="alert" hidden>Completează numele, telefonul și localitatea.</p>
+      <button class="btn btn-wa submit" type="submit"><Icon name="whatsapp" /> Trimite pe WhatsApp</button>
+      <p class="fine">Se deschide WhatsApp cu mesajul completat. Pozele le atașezi acolo.</p>
+    </form>
+  </div>
+</section>
+
+<script>
+  import { site } from '../data/site';
+  // TODO(real): pe proiectul real, formularul poate trimite și pe e-mail (Resend) pe lângă WhatsApp.
+  const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
+  const err = form?.querySelector<HTMLElement>('[data-error]');
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    const get = (k: string) => String(fd.get(k) || '').trim();
+    const missing = ['name', 'phone', 'place'].filter((k) => !get(k));
+    form.querySelectorAll<HTMLInputElement>('input[required]').forEach((i) =>
+      i.setAttribute('aria-invalid', String(missing.includes(i.name))),
+    );
+    if (err) err.hidden = missing.length === 0;
+    if (missing.length) {
+      form.querySelector<HTMLInputElement>(`[name="${missing[0]}"]`)?.focus();
+      return;
+    }
+    const text = [
+      `Bună ziua! Sunt ${get('name')}, din ${get('place')}.`,
+      `Lucrare: ${get('job')}`,
+      get('msg') && `Detalii: ${get('msg')}`,
+      `Telefon: ${get('phone')}`,
+    ]
+      .filter(Boolean)
+      .join('\n');
+    window.open(`https://wa.me/${site.whatsapp}?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
+  });
+</script>
+
+<style>
+  .contact {
+    background: var(--color-slate);
+    color: var(--color-slate-text);
+  }
+  .contact :is(h1, h2) {
+    color: #fff;
+  }
+  .as-page {
+    margin-top: calc(-1 * var(--header-h));
+    padding-top: calc(var(--header-h) + clamp(40px, 7vw, 88px));
+  }
+  .as-page :is(h1) {
+    font-size: clamp(2.5rem, 1.4rem + 4.4vw, 4.25rem);
+    letter-spacing: -0.035em;
+    line-height: 1;
+  }
+  .crumbs {
+    margin-bottom: 18px;
+    font-size: 0.9375rem;
+    color: rgb(255 255 255 / 0.4);
+  }
+  .crumbs a {
+    color: rgb(255 255 255 / 0.78);
+    text-decoration: none;
+  }
+  .crumbs a:hover {
+    color: #fff;
+  }
+  .contact .lead {
+    color: var(--color-slate-text);
+    margin-top: 18px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    gap: clamp(32px, 6vw, 88px);
+    align-items: start;
+  }
+  .phone {
+    display: inline-block;
+    margin-top: clamp(28px, 4vw, 44px);
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2.5rem, 1.6rem + 3.6vw, 4.25rem);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: #fff;
+    text-decoration: none;
+    border-bottom: 4px solid var(--color-accent-bright);
+    padding-bottom: 6px;
+  }
+  .phone:hover {
+    color: var(--color-accent-bright);
+  }
+  .hours {
+    margin-top: 18px;
+    max-width: 52ch;
+  }
+  .ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 28px;
+  }
+  .btn-line-light {
+    border-color: #fff;
+    color: #fff;
+  }
+  .btn-line-light:hover {
+    background: #fff;
+    color: var(--color-ink);
+  }
+
+  .form {
+    background: var(--color-surface);
+    border-radius: var(--radius);
+    padding: clamp(22px, 3vw, 36px);
+    color: var(--color-body);
+    display: grid;
+    gap: 16px;
+  }
+  .form-title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.3125rem;
+    color: var(--color-ink);
+    padding-bottom: 14px;
+    border-bottom: 3px solid var(--color-ink);
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .field {
+    display: grid;
+    gap: 6px;
+  }
+  .field label {
+    font-weight: 600;
+    font-size: 0.9375rem;
+    color: var(--color-ink);
+  }
+  .opt {
+    font-weight: 400;
+    color: var(--color-muted);
+  }
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    min-height: 48px;
+    padding: 10px 12px;
+    font: inherit;
+    font-size: 1rem;
+    color: var(--color-ink);
+    background: var(--color-paper);
+    border: 1px solid var(--color-line-strong);
+    border-radius: var(--radius);
+    transition: border-color 160ms ease-out, background-color 160ms ease-out;
+  }
+  .field textarea {
+    resize: vertical;
+  }
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    background: #fff;
+    box-shadow: 0 0 0 3px var(--color-accent-soft);
+  }
+  .field input[aria-invalid='true'] {
+    border-color: #b3261e;
+  }
+  .error {
+    color: #b3261e;
+    font-weight: 600;
+    font-size: 0.9375rem;
+  }
+  .submit {
+    width: 100%;
+    margin-top: 4px;
+  }
+  .fine {
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+    text-align: center;
+  }
+
+  @media (max-width: 900px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 520px) {
+    .row {
+      grid-template-columns: 1fr;
+    }
+    .ctas .btn {
+      width: 100%;
+    }
+  }
+</style>

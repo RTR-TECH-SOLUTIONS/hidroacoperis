@@ -1,0 +1,792 @@
+---
+import Icon from './Icon.astro';
+import { materials, surfacePrices, repairs } from '../data/prices';
+import { site } from '../data/site';
+
+const data = { materials, surfacePrices, repairs, whatsapp: site.whatsapp, firm: site.name };
+const fmt = (n: number) => new Intl.NumberFormat('ro-RO').format(n);
+const matEntries = Object.entries(materials);
+---
+
+<section class="section wizard" id="calculator">
+  <div class="wrap layout">
+    <div class="wz" data-wz>
+      <div class="wz-top">
+        <p class="wz-step num" data-wz-label>Pasul 1 din 5</p>
+        <div class="wz-progress" aria-hidden="true"><span data-wz-bar></span></div>
+      </div>
+
+      <form data-est-form onsubmit="return false">
+        <fieldset class="step" data-step="job">
+          <legend class="q">Ce lucrare ai de făcut?</legend>
+          <div class="choices">
+            <label class="choice">
+              <input type="radio" name="job" value="nou" checked />
+              <span class="c-body"><span class="c-t">Acoperiș nou</span><span class="c-d">Casă la roșu, anexă sau garaj</span></span>
+            </label>
+            <label class="choice">
+              <input type="radio" name="job" value="inlocuire" />
+              <span class="c-body"><span class="c-t">Înlocuire acoperiș vechi</span><span class="c-d">Dăm jos ce e și facem din nou</span></span>
+            </label>
+            <label class="choice">
+              <input type="radio" name="job" value="reparatie" />
+              <span class="c-body"><span class="c-t">Reparație</span><span class="c-d">Țigle, coame, coș, jgheaburi</span></span>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset class="step" data-step="material" hidden>
+          <legend class="q">Ce învelitoare vrei?</legend>
+          <div class="choices">
+            {
+              matEntries.map(([id, m], i) => (
+                <label class="choice with-img">
+                  <input type="radio" name="material" value={id} checked={i === 0} />
+                  <span class="c-img"><img src={m.img} alt="" width="160" height="120" loading="lazy" /></span>
+                  <span class="c-body">
+                    <span class="c-t">{m.label}</span>
+                    <span class="c-d">{m.note}</span>
+                    <span class="c-p num">montaj {m.montaj[0]}–{m.montaj[1]} lei/m²</span>
+                  </span>
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+
+        <fieldset class="step" data-step="brand" hidden>
+          <legend class="q">Ce marcă de material?</legend>
+          <p class="hint">
+            Prețul materialului diferă mult de la o marcă la alta. Dacă nu te-ai hotărât, alege „Nu am ales încă” și
+            socotim intervalul pe toate.
+          </p>
+          {
+            matEntries.map(([id, m]) => (
+              <div class="choices" data-brands-for={id} hidden={id !== 'metalica'}>
+                {m.brands.map((b) => (
+                  <label class="choice">
+                    <input type="radio" name={`brand-${id}`} value={b.id} />
+                    <span class="c-body">
+                      <span class="c-t">{b.name}</span>
+                      <span class="c-d">{b.product}</span>
+                      <span class="c-p num">{b.price[0]}–{b.price[1]} lei/m²</span>
+                    </span>
+                  </label>
+                ))}
+                <label class="choice">
+                  <input type="radio" name={`brand-${id}`} value="oricare" checked />
+                  <span class="c-body">
+                    <span class="c-t">Nu am ales încă</span>
+                    <span class="c-d">interval pe toate mărcile</span>
+                  </span>
+                </label>
+              </div>
+            ))
+          }
+        </fieldset>
+
+        <fieldset class="step" data-step="dims" hidden>
+          <legend class="q">Cât de mare e casa?</legend>
+          <p class="hint">Văzută de sus, fără streașină. Streașina de 50 cm o adăugăm noi, panta o măsurăm când venim.</p>
+
+          <div class="seg-row">
+            <label><input type="radio" name="shape" value="2" checked /><span>În două ape</span></label>
+            <label><input type="radio" name="shape" value="4" /><span>În patru ape</span></label>
+          </div>
+
+          <div class="range">
+            <div class="range-top">
+              <label for="len">Lungimea casei</label>
+              <output for="len" class="num" data-out="len">12 m</output>
+            </div>
+            <input id="len" name="len" type="range" min="6" max="24" step="0.5" value="12" />
+          </div>
+          <div class="range">
+            <div class="range-top">
+              <label for="wid">Lățimea casei</label>
+              <output for="wid" class="num" data-out="wid">10 m</output>
+            </div>
+            <input id="wid" name="wid" type="range" min="5" max="16" step="0.5" value="10" />
+          </div>
+          <div class="range">
+            <div class="range-top">
+              <label for="slope">Panta acoperișului</label>
+              <output for="slope" class="num" data-out="slope">35°</output>
+            </div>
+            <input id="slope" name="slope" type="range" min="15" max="50" step="1" value="35" />
+          </div>
+          <p class="area-live">Cam <strong class="num" data-area-live>175 m²</strong> de acoperiș</p>
+        </fieldset>
+
+        <fieldset class="step" data-step="repairs" hidden>
+          <legend class="q">Ce e de reparat?</legend>
+          <p class="hint">
+            Pune câte bucăți sau câți metri ai văzut de jos. Dacă nu știi, lasă zero și trimite-ne poze: le numărăm noi.
+          </p>
+          <ul class="repair-list">
+            {
+              repairs.map((r) => (
+                <li data-repair={r.id}>
+                  <div>
+                    <span class="r-label">{r.label}</span>
+                    <span class="r-detail">
+                      {r.detail} · <span class="num">{fmt(r.price[0])}–{fmt(r.price[1])}</span> lei/{r.unit}
+                    </span>
+                  </div>
+                  <div class="stepper">
+                    <button type="button" data-inc="-1" aria-label={`Mai puțin: ${r.label}`}><Icon name="minus" /></button>
+                    <input
+                      type="number"
+                      inputmode="numeric"
+                      min="0"
+                      max={r.max}
+                      step={r.step}
+                      value="0"
+                      aria-label={`${r.label}, în ${r.unit}`}
+                      class="num"
+                    />
+                    <span class="unit">{r.unit}</span>
+                    <button type="button" data-inc="1" aria-label={`Mai mult: ${r.label}`}><Icon name="plus" /></button>
+                  </div>
+                </li>
+              ))
+            }
+          </ul>
+        </fieldset>
+
+        <div class="step" data-step="result" hidden>
+          <div class="sheet" data-sheet>
+            <div class="sheet-head">
+              <div>
+                <p class="sheet-title">Deviz estimativ</p>
+                <p class="sheet-sub" data-summary></p>
+              </div>
+              <p class="sheet-meta"><span>{site.name}</span><span class="num" data-date></span></p>
+            </div>
+            <div data-sheet-body></div>
+            <div class="total">
+              <p data-total-label>Total estimativ</p>
+              <p class="total-num" data-total></p>
+            </div>
+            <p class="note" data-note></p>
+            <div class="sheet-actions no-print">
+              <a class="btn btn-wa" href="#" target="_blank" rel="noopener" data-wa>
+                <Icon name="whatsapp" /> Trimite devizul pe WhatsApp
+              </a>
+              <button class="btn btn-line" type="button" data-print><Icon name="print" /> Printează</button>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <div class="wz-nav no-print">
+        <button type="button" class="btn btn-line" data-wz-back hidden><Icon name="chevron-left" /> Înapoi</button>
+        <button type="button" class="btn btn-ink" data-wz-next>Mai departe <Icon name="chevron-right" /></button>
+        <button type="button" class="btn btn-line" data-wz-restart hidden>Ia-o de la capăt</button>
+      </div>
+    </div>
+
+    <aside class="summary no-print" aria-label="Ce ai ales">
+      <p class="s-title">Ce ai ales</p>
+      <dl data-picks></dl>
+      <p class="s-note">
+        Prețurile sunt orientative. Prețul final îl primești după ce vedem acoperișul, scris pe rânduri.
+      </p>
+    </aside>
+  </div>
+  <script type="application/json" id="est-data" set:html={JSON.stringify(data)} />
+</section>
+
+<script>
+  import { initEstimator } from '../scripts/estimator';
+  initEstimator();
+</script>
+
+<style>
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
+    gap: clamp(24px, 4vw, 56px);
+    align-items: start;
+  }
+  .wz {
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sheet);
+    padding: clamp(20px, 3.6vw, 44px);
+    min-width: 0;
+  }
+  .wz-top {
+    margin-bottom: 26px;
+  }
+  .wz-step {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.9375rem;
+    color: var(--color-accent);
+  }
+  .wz-progress {
+    margin-top: 10px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--color-line);
+    overflow: hidden;
+  }
+  .wz-progress span {
+    display: block;
+    height: 100%;
+    width: 20%;
+    background: var(--color-accent);
+    transition: width 260ms ease-out;
+  }
+
+  .step {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+  }
+  .step[hidden] {
+    display: none;
+  }
+  .q {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.125rem);
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    color: var(--color-ink);
+    padding: 0;
+    margin-bottom: 20px;
+  }
+  .hint {
+    margin: -8px 0 20px;
+    color: var(--color-body);
+    max-width: 60ch;
+  }
+
+  .choices {
+    display: grid;
+    gap: 10px;
+  }
+  .choices[hidden] {
+    display: none;
+  }
+  .choice {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 18px;
+    border: 2px solid var(--color-line);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: border-color 160ms ease-out, background-color 160ms ease-out;
+  }
+  .choice:hover {
+    border-color: var(--color-line-strong);
+  }
+  .choice input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    cursor: pointer;
+  }
+  .choice::after {
+    content: '';
+    margin-left: auto;
+    flex: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid var(--color-line-strong);
+    transition: border 160ms ease-out;
+  }
+  .choice:has(input:checked) {
+    border-color: var(--color-accent);
+    background: var(--color-accent-soft);
+  }
+  .choice:has(input:checked)::after {
+    border: 7px solid var(--color-accent);
+  }
+  .choice:has(input:focus-visible) {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+  .c-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .c-t {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: var(--color-ink);
+  }
+  .c-d {
+    font-size: 0.9375rem;
+    color: var(--color-body);
+  }
+  .c-p {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-accent);
+    margin-top: 2px;
+  }
+  .c-img {
+    flex: none;
+    width: 88px;
+    height: 66px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--color-line);
+  }
+  .c-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .seg-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border: 2px solid var(--color-ink);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 26px;
+  }
+  .seg-row label {
+    position: relative;
+    display: flex;
+  }
+  .seg-row label + label {
+    border-left: 2px solid var(--color-ink);
+  }
+  .seg-row input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    cursor: pointer;
+  }
+  .seg-row span {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 50px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--color-ink);
+    transition: background-color 160ms ease-out, color 160ms ease-out;
+  }
+  .seg-row input:checked + span {
+    background: var(--color-ink);
+    color: #fff;
+  }
+  .seg-row input:focus-visible + span {
+    outline: 3px solid var(--color-accent);
+    outline-offset: -5px;
+  }
+
+  .range + .range {
+    margin-top: 18px;
+  }
+  .range-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .range-top label {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--color-ink);
+  }
+  .range-top output {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.25rem;
+    color: var(--color-accent);
+  }
+  input[type='range'] {
+    --p: 50%;
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 34px;
+    background: transparent;
+    cursor: pointer;
+    touch-action: pan-y;
+  }
+  input[type='range']::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--color-accent) var(--p), var(--color-line) var(--p));
+  }
+  input[type='range']::-moz-range-track {
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--color-accent) var(--p), var(--color-line) var(--p));
+  }
+  input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 28px;
+    height: 28px;
+    margin-top: -11px;
+    border-radius: 6px;
+    background: var(--color-surface);
+    border: 3px solid var(--color-accent);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.2);
+  }
+  input[type='range']::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    background: var(--color-surface);
+    border: 3px solid var(--color-accent);
+  }
+  .area-live {
+    margin-top: 24px;
+    padding: 14px 16px;
+    border-radius: var(--radius);
+    background: var(--color-paper);
+    color: var(--color-ink);
+  }
+  .area-live strong {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+  }
+
+  .repair-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--color-line);
+  }
+  .repair-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .r-label {
+    display: block;
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+  .r-detail {
+    display: block;
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+    margin-top: 2px;
+  }
+  .stepper {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    border: 1px solid var(--color-line-strong);
+    border-radius: var(--radius);
+    padding: 2px;
+  }
+  .stepper button {
+    width: 38px;
+    height: 38px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--color-ink);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .stepper button:hover {
+    background: var(--color-paper);
+  }
+  .stepper :global(svg) {
+    width: 16px;
+    height: 16px;
+  }
+  .stepper input {
+    width: 3.2ch;
+    border: 0;
+    text-align: right;
+    font: inherit;
+    font-weight: 700;
+    color: var(--color-ink);
+    background: transparent;
+    -moz-appearance: textfield;
+  }
+  .stepper input::-webkit-outer-spin-button,
+  .stepper input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .stepper .unit {
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+    min-width: 3.2ch;
+  }
+
+  .wz-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 28px;
+    padding-top: 22px;
+    border-top: 1px solid var(--color-line);
+  }
+  .wz-nav [data-wz-next],
+  .wz-nav [data-wz-restart] {
+    margin-left: auto;
+  }
+  .wz-nav [hidden] {
+    display: none;
+  }
+
+  /* devizul */
+  .sheet-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 18px;
+    border-bottom: 3px solid var(--color-ink);
+  }
+  .sheet-title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.125rem);
+    color: var(--color-ink);
+    line-height: 1.1;
+  }
+  .sheet-sub {
+    margin-top: 6px;
+    font-size: 0.9375rem;
+  }
+  .sheet-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+    flex: none;
+  }
+  .sheet :global(.area) {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    gap: 0 16px;
+    padding: 20px 0 16px;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .sheet :global(.area p:first-child) {
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+  .sheet :global(.area-num) {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2rem, 1.5rem + 2vw, 3rem);
+    line-height: 1;
+    color: var(--color-ink);
+    letter-spacing: -0.03em;
+  }
+  .sheet :global(.area-formula) {
+    grid-column: 1 / -1;
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+    margin-top: 6px;
+  }
+  .sheet :global(.rows) {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+    margin-top: 8px;
+  }
+  .sheet :global(.rows caption) {
+    text-align: left;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.0625rem;
+    color: var(--color-ink);
+    padding: 18px 0 6px;
+  }
+  .sheet :global(.rows td) {
+    padding: 12px 0;
+    border-top: 1px solid var(--color-line);
+    color: var(--color-ink);
+    vertical-align: top;
+  }
+  .sheet :global(.rows .r) {
+    text-align: right;
+    padding-left: 14px;
+    white-space: nowrap;
+  }
+  .sheet :global(.rows .muted) {
+    color: var(--color-muted);
+    font-size: 0.875rem;
+  }
+  .sheet :global(.rows td:last-child) {
+    font-weight: 600;
+  }
+  .sheet :global(.rows tr.sub td) {
+    border-top: 2px solid var(--color-ink);
+    font-weight: 700;
+  }
+  .sheet :global(.empty) {
+    padding: 24px 0;
+    color: var(--color-body);
+  }
+  .total {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+    padding-top: 16px;
+    border-top: 3px double var(--color-ink);
+  }
+  .total p:first-child {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--color-ink);
+    font-size: 1.125rem;
+  }
+  .total-num {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.125rem);
+    color: var(--color-accent);
+    letter-spacing: -0.02em;
+  }
+  .note {
+    margin-top: 10px;
+    font-size: 0.875rem;
+    color: var(--color-muted);
+    max-width: 62ch;
+  }
+  .sheet-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 22px;
+  }
+
+  .summary {
+    position: sticky;
+    top: calc(var(--header-h) + 24px);
+    padding: 24px;
+    border-radius: var(--radius);
+    background: var(--color-slate);
+    color: var(--color-slate-text);
+  }
+  .s-title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.25rem;
+    color: #fff;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--color-accent-bright);
+  }
+  .summary :global(dl) {
+    margin: 0;
+  }
+  .summary :global(dl div) {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--color-slate-line);
+  }
+  .summary :global(dt) {
+    font-size: 0.8125rem;
+    color: #93a0b3;
+  }
+  .summary :global(dd) {
+    margin: 2px 0 0;
+    color: #fff;
+    font-weight: 600;
+  }
+  .s-note {
+    margin-top: 16px;
+    font-size: 0.875rem;
+  }
+
+  @media (max-width: 960px) {
+    .layout {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .summary {
+      position: static;
+      padding: 16px 18px;
+    }
+    .summary :global(dl) {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 18px;
+    }
+    .summary :global(dl div) {
+      border: 0;
+      padding: 6px 0;
+    }
+    .s-note {
+      display: none;
+    }
+    .s-title {
+      font-size: 1rem;
+      padding-bottom: 8px;
+    }
+  }
+  @media (max-width: 560px) {
+    .choice {
+      padding: 14px;
+    }
+    .c-img {
+      width: 64px;
+      height: 56px;
+    }
+    .repair-list li {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .sheet-head {
+      flex-direction: column;
+    }
+    .sheet-meta {
+      align-items: flex-start;
+      text-align: left;
+      flex-direction: row;
+      gap: 8px;
+    }
+    .sheet :global(.rows .muted) {
+      display: none;
+    }
+    .sheet-actions .btn {
+      width: 100%;
+    }
+    .wz-nav .btn {
+      flex: 1;
+    }
+  }
+
+  @media print {
+    :global(body *) {
+      visibility: hidden;
+    }
+    .sheet,
+    .sheet :global(*) {
+      visibility: visible;
+    }
+    .sheet {
+      position: absolute;
+      inset: 0 0 auto 0;
+    }
+    .no-print {
+      display: none !important;
+    }
+  }
+</style>

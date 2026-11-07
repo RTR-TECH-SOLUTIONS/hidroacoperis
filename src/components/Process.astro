@@ -1,0 +1,192 @@
+---
+import { site, u } from '../data/site';
+
+const steps = [
+  {
+    t: 'Ne trimiți poze sau ne suni',
+    d: 'Două-trei poze de afară și una din pod ne spun mai mult decât o descriere la telefon. Răspundem în aceeași zi, de obicei în câteva ore.',
+  },
+  {
+    t: 'Venim și măsurăm',
+    d: 'Urcăm pe acoperiș, nu ne uităm doar de jos. Verificăm lemnul, folia și tinichigeria și facem poze cu ce găsim, ca să le vezi și tu.',
+  },
+  {
+    t: 'Primești devizul scris, pe rânduri',
+    d: 'Manopera separat de material, cu marca și cantitatea fiecărui material. Fără rânduri de „diverse”. Ce nu e clar, scoatem.',
+  },
+  {
+    t: 'Lucrăm și predăm curat',
+    d: 'Pe apă, ca să nu rămână casa descoperită peste noapte. La final trecem cu magnetul prin curte după șuruburi și cuie, apoi semnăm garanția.',
+  },
+];
+
+const contract = [
+  ['Garanția de montaj', '10 ani la acoperișuri noi, 2 ani la reparații'],
+  ['Garanția materialului', 'cea a producătorului, după gamă'],
+  ['Termenul', 'trecut în zile lucrătoare, cu ziua de început'],
+  ['Plata', 'avans pentru material, restul la predare'],
+  ['Mărci montate', site.brands.join(', ')],
+];
+---
+
+<section class="section process">
+  <div class="wrap grid">
+    <figure class="figure">
+      <div class="photo">
+        <img
+          src={u('/img/hero-cos-reparatie.webp')}
+          width="1067"
+          height="1600"
+          alt="Acoperiș vechi din țiglă, cu rândurile de lângă coșul de fum scoase și o scară sprijinită de streașină"
+          loading="lazy"
+        />
+      </div>
+      <figcaption class="caption">
+        Rândurile de lângă coș, scoase ca să punem șorțul din tablă. Siliconul de dinainte ținea un an.
+      </figcaption>
+    </figure>
+
+    <div class="content">
+      <h2 class="h-section">De la poze la acoperișul gata</h2>
+      <ol class="steps">
+        {
+          steps.map((s, i) => (
+            <li>
+              <span class="n num">{i + 1}</span>
+              <div>
+                <h3>{s.t}</h3>
+                <p>{s.d}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+
+      <div class="contract">
+        <h3>Ce scrie în contract</h3>
+        <dl>
+          {
+            contract.map(([k, v]) => (
+              <div>
+                <dt>{k}</dt>
+                <dd>{v}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(32px, 6vw, 88px);
+    align-items: start;
+  }
+  .figure {
+    margin: 0;
+    position: sticky;
+    top: calc(var(--header-h) + 24px);
+  }
+  .figure .photo {
+    aspect-ratio: 4 / 5;
+  }
+  .figure .caption {
+    margin-top: 10px;
+    max-width: 44ch;
+  }
+  .steps {
+    list-style: none;
+    margin: clamp(28px, 4vw, 44px) 0 0;
+    padding: 0;
+    counter-reset: none;
+  }
+  .steps li {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    gap: 12px;
+    padding: 26px 0;
+    border-top: 1px solid var(--color-line);
+  }
+  .steps li:first-child {
+    border-top: 2px solid var(--color-ink);
+  }
+  .n {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 2.5rem;
+    line-height: 0.9;
+    color: var(--color-accent);
+  }
+  .steps h3 {
+    font-size: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+  }
+  .steps p {
+    margin-top: 8px;
+    max-width: 58ch;
+  }
+
+  .contract {
+    margin-top: clamp(32px, 4vw, 48px);
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sheet);
+    padding: clamp(20px, 3vw, 32px);
+  }
+  .contract h3 {
+    font-size: 1.25rem;
+    padding-bottom: 14px;
+    border-bottom: 3px solid var(--color-ink);
+  }
+  .contract dl {
+    margin: 0;
+  }
+  .contract dl div {
+    display: grid;
+    grid-template-columns: minmax(150px, 0.8fr) 1.4fr;
+    gap: 16px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--color-line);
+    font-size: 0.9875rem;
+  }
+  .contract dl div:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+  .contract dt {
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+  .contract dd {
+    margin: 0;
+  }
+
+  @media (max-width: 900px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+    .figure {
+      position: static;
+      order: 2;
+    }
+    .figure .photo {
+      aspect-ratio: 16 / 10;
+    }
+  }
+  @media (max-width: 520px) {
+    .steps li {
+      grid-template-columns: 44px 1fr;
+    }
+    .n {
+      font-size: 2rem;
+    }
+    .contract dl div {
+      grid-template-columns: 1fr;
+      gap: 2px;
+    }
+  }
+</style>

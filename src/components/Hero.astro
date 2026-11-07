@@ -1,0 +1,516 @@
+---
+import Icon from './Icon.astro';
+import { site, waDefault } from '../data/site';
+import { heroSlides } from '../data/heroSlides';
+
+const pad = (i: number) => String(i + 1).padStart(2, '0');
+---
+
+<section class="hero" data-hero data-overlay-hero aria-roledescription="carusel" aria-label="Serviciile noastre">
+  <div class="slides" aria-hidden="true">
+    {
+      heroSlides.map((s, i) => (
+        <div class:list={['slide', i === 0 && 'is-active']} data-slide={i}>
+          <img
+            src={s.img}
+            width={s.w}
+            height={s.h}
+            alt=""
+            style={s.focus ? `object-position:${s.focus}` : undefined}
+            fetchpriority={i === 0 ? 'high' : 'low'}
+            loading={i === 0 ? 'eager' : 'lazy'}
+            decoding="async"
+          />
+        </div>
+      ))
+    }
+  </div>
+  <div class="tint" aria-hidden="true"></div>
+  <div class="scrim" aria-hidden="true"></div>
+
+  <div class="wrap bottom">
+    <div class="copy">
+      <h1>{site.name} · reparații de acoperiș și acoperișuri noi</h1>
+
+      <div class="bars" role="group" aria-label="Alege serviciul">
+        {
+          heroSlides.map((s, i) => (
+            <button type="button" class="bar" data-go={i} aria-label={`Serviciul ${pad(i)}: ${s.title}`}>
+              <span class="fill" />
+            </button>
+          ))
+        }
+      </div>
+
+      <div class="titles" data-titles>
+        {
+          heroSlides.map((s, i) => (
+            <div class:list={['t', i === 0 && 'is-active']} data-title={i} aria-hidden={i !== 0 ? 'true' : 'false'}>
+              <p class="title">{s.title}</p>
+              <p class="sub">{s.sub}</p>
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="ctas">
+        <a class="btn btn-wa" href={waDefault} target="_blank" rel="noopener">
+          <Icon name="whatsapp" /> Trimite poze pe WhatsApp
+        </a>
+        <a class="btn btn-light" href={site.phoneHref}>
+          <Icon name="phone" /> <span class="num">{site.phoneDisplay}</span>
+        </a>
+        <button type="button" class="pause" data-pause aria-pressed="false">
+          <span class="sr-only" data-pause-label>Oprește derularea</span>
+          <svg class="i-pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" /></svg>
+          <svg class="i-play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
+        </button>
+      </div>
+    </div>
+
+    <ol class="index">
+      {
+        heroSlides.map((s, i) => (
+          <li>
+            <button type="button" data-go={i} class:list={[i === 0 && 'is-active']}>
+              <span class="n num">{pad(i)}</span>
+              <span>{s.title}</span>
+            </button>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<script>
+  const hero = document.querySelector<HTMLElement>('[data-hero]');
+  if (hero) {
+    const slides = [...hero.querySelectorAll<HTMLElement>('[data-slide]')];
+    const titles = [...hero.querySelectorAll<HTMLElement>('[data-title]')];
+    const bars = [...hero.querySelectorAll<HTMLElement>('.bar')];
+    const indexBtns = [...hero.querySelectorAll<HTMLElement>('.index [data-go]')];
+    const titlesEl = hero.querySelector<HTMLElement>('[data-titles]');
+    const pauseBtn = hero.querySelector<HTMLButtonElement>('[data-pause]');
+    const pauseLabel = hero.querySelector('[data-pause-label]');
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let current = 0;
+    let paused = reduce;
+
+    const go = (i: number) => {
+      current = (i + slides.length) % slides.length;
+      slides.forEach((s, k) => s.classList.toggle('is-active', k === current));
+      titles.forEach((t, k) => {
+        t.setAttribute('aria-hidden', String(k !== current));
+        t.classList.toggle('is-active', k === current);
+      });
+      bars.forEach((b, k) => {
+        b.classList.toggle('is-done', k < current);
+        b.classList.remove('is-active');
+        if (k === current) {
+          // repornește animația barei active
+          void b.offsetWidth;
+          b.classList.add('is-active');
+        }
+      });
+      indexBtns.forEach((b, k) => b.classList.toggle('is-active', k === current));
+    };
+
+    const setPaused = (p: boolean) => {
+      paused = p;
+      hero.classList.toggle('is-paused', p);
+      pauseBtn?.setAttribute('aria-pressed', String(p));
+      if (pauseLabel) pauseLabel.textContent = p ? 'Pornește derularea' : 'Oprește derularea';
+    };
+
+    bars.forEach((b) =>
+      b.querySelector('.fill')?.addEventListener('animationend', () => {
+        if (!paused && b.classList.contains('is-active')) go(current + 1);
+      }),
+    );
+    hero.querySelectorAll<HTMLElement>('[data-go]').forEach((b) =>
+      b.addEventListener('click', () => go(Number(b.dataset.go))),
+    );
+    pauseBtn?.addEventListener('click', () => setPaused(!paused));
+    document.addEventListener('visibilitychange', () => hero.classList.toggle('is-hidden-tab', document.hidden));
+
+    // Swipe: cu degetul pe telefon, cu mouse-ul tras pe PC. Fără săgeți.
+    let startX = 0;
+    let startY = 0;
+    let dragging = false;
+    let moved = false;
+    const reset = () => {
+      dragging = false;
+      hero.classList.remove('is-dragging');
+      if (titlesEl) titlesEl.style.transform = '';
+    };
+    hero.addEventListener('pointerdown', (e) => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      startX = e.clientX;
+      startY = e.clientY;
+      dragging = true;
+      moved = false;
+    });
+    hero.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      if (!moved && Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy)) {
+        moved = true;
+        hero.classList.add('is-dragging');
+        try {
+          hero.setPointerCapture(e.pointerId);
+        } catch {}
+      }
+      if (moved && titlesEl) titlesEl.style.transform = `translateX(${dx * 0.35}px)`;
+    });
+    hero.addEventListener('pointerup', (e) => {
+      if (!dragging) return;
+      const dx = e.clientX - startX;
+      reset();
+      if (moved && Math.abs(dx) > 48) go(current + (dx < 0 ? 1 : -1));
+    });
+    hero.addEventListener('pointercancel', () => {
+      reset();
+      moved = false;
+    });
+    // un swipe care a pornit de pe un buton nu-l mai apasă
+    hero.addEventListener(
+      'click',
+      (e) => {
+        if (moved) {
+          e.preventDefault();
+          e.stopPropagation();
+          moved = false;
+        }
+      },
+      true,
+    );
+    hero.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') go(current + 1);
+      if (e.key === 'ArrowLeft') go(current - 1);
+    });
+
+    setPaused(paused);
+    go(0);
+  }
+</script>
+
+<style>
+  .hero {
+    --dur: 4.2s;
+    position: relative;
+    margin-top: calc(-1 * var(--header-h));
+    height: clamp(600px, 100svh, 900px);
+    background: var(--color-slate);
+    color: #fff;
+    overflow: hidden;
+    isolation: isolate;
+    touch-action: pan-y;
+    cursor: grab;
+  }
+  .hero.is-dragging {
+    cursor: grabbing;
+    user-select: none;
+  }
+  .hero.is-dragging .titles {
+    transition: none;
+  }
+  .titles {
+    transition: transform 260ms ease-out;
+  }
+  .slide img {
+    pointer-events: none;
+    -webkit-user-drag: none;
+    user-select: none;
+  }
+  .slides,
+  .slide,
+  .tint,
+  .scrim {
+    position: absolute;
+    inset: 0;
+  }
+  /* tenta rece din reel: pozele trag spre bleumarin, oricare ar fi culoarea țiglei */
+  .tint {
+    z-index: 1;
+    background: #123a78;
+    mix-blend-mode: multiply;
+    opacity: 0.62;
+  }
+  .slide {
+    opacity: 0;
+    transition: opacity 900ms ease-out;
+  }
+  .slide.is-active {
+    opacity: 1;
+  }
+  .slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.04);
+    filter: saturate(0.55) contrast(1.05) brightness(1.06);
+  }
+  .slide.is-active img {
+    animation: drift calc(var(--dur) + 1.2s) linear forwards;
+  }
+  @keyframes drift {
+    from {
+      transform: scale(1.04) translate3d(0, 0, 0);
+    }
+    to {
+      transform: scale(1.13) translate3d(-1.5%, -1%, 0);
+    }
+  }
+  .scrim {
+    background:
+      linear-gradient(to bottom, rgb(8 18 38 / 0.55) 0%, rgb(8 18 38 / 0) 26%),
+      linear-gradient(to top, rgb(8 18 38 / 0.95) 0%, rgb(10 26 54 / 0.7) 34%, rgb(10 26 54 / 0.12) 66%);
+    z-index: 2;
+  }
+
+  .bottom {
+    z-index: 3;
+  }
+  .bottom {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: clamp(36px, 6vh, 72px);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 48px;
+    align-items: end;
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 0;
+    line-height: 1.4;
+    color: rgb(255 255 255 / 0.82);
+    margin-bottom: 18px;
+  }
+
+  .bars {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 18px;
+  }
+  .bar {
+    width: 34px;
+    height: 20px;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+  .bar .fill {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background: rgb(255 255 255 / 0.28);
+    overflow: hidden;
+  }
+  .bar .fill::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--color-wa-bright);
+    transform-origin: left;
+    transform: scaleX(0);
+  }
+  .bar.is-done .fill::after {
+    transform: scaleX(1);
+  }
+  .bar.is-active .fill::after {
+    animation: fill var(--dur) linear forwards;
+  }
+  .bar:hover .fill {
+    background: rgb(255 255 255 / 0.5);
+  }
+  @keyframes fill {
+    to {
+      transform: scaleX(1);
+    }
+  }
+  .is-paused .bar.is-active .fill::after,
+  .is-paused .slide.is-active img,
+  .is-hidden-tab .bar.is-active .fill::after {
+    animation-play-state: paused;
+  }
+
+  .titles {
+    display: grid;
+  }
+  .t {
+    grid-area: 1 / 1;
+    align-self: end;
+    visibility: hidden;
+    opacity: 0;
+  }
+  .t.is-active {
+    visibility: visible;
+    opacity: 1;
+    animation: rise 520ms ease-out both;
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2.625rem, 1.4rem + 5vw, 5.75rem);
+    line-height: 0.98;
+    letter-spacing: -0.035em;
+    color: #fff;
+    text-wrap: balance;
+    max-width: 15ch;
+  }
+  .sub {
+    margin-top: 14px;
+    font-size: clamp(1.0625rem, 1rem + 0.35vw, 1.25rem);
+    color: rgb(255 255 255 / 0.88);
+    max-width: 46ch;
+  }
+
+  .ctas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-top: 30px;
+  }
+  .btn-light {
+    background: #fff;
+    color: var(--color-ink);
+  }
+  .btn-light:hover {
+    background: var(--color-paper);
+  }
+  .pause {
+    width: 52px;
+    height: 52px;
+    border-radius: var(--radius);
+    border: 2px solid rgb(255 255 255 / 0.5);
+    background: transparent;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: border-color 160ms ease-out;
+  }
+  .pause:hover {
+    border-color: #fff;
+  }
+  .pause svg {
+    width: 18px;
+    height: 18px;
+  }
+  .pause .i-play,
+  .is-paused .pause .i-pause {
+    display: none;
+  }
+  .is-paused .pause .i-play {
+    display: block;
+  }
+
+  .index {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    min-width: 270px;
+    border-top: 1px solid rgb(255 255 255 / 0.25);
+  }
+  .index button {
+    display: flex;
+    gap: 14px;
+    width: 100%;
+    padding: 9px 0;
+    border: 0;
+    border-bottom: 1px solid rgb(255 255 255 / 0.14);
+    background: none;
+    text-align: left;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.9375rem;
+    color: rgb(255 255 255 / 0.62);
+    cursor: pointer;
+    transition: color 180ms ease-out;
+  }
+  .index button:hover,
+  .index button.is-active {
+    color: #fff;
+  }
+  .index .n {
+    color: rgb(255 255 255 / 0.45);
+  }
+  .index button.is-active .n {
+    color: var(--color-accent-bright);
+  }
+  .index button.is-active {
+    box-shadow: inset 3px 0 0 var(--color-accent-bright);
+    padding-left: 14px;
+  }
+  .index button {
+    transition: color 180ms ease-out, padding 180ms ease-out;
+  }
+
+  @media (max-width: 1100px) {
+    .index {
+      display: none;
+    }
+    .bottom {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 720px) {
+    .hero {
+      height: clamp(580px, calc(100svh - 70px), 820px);
+    }
+    .bars {
+      gap: 4px;
+    }
+    .bar {
+      flex: 1;
+      width: auto;
+    }
+    .ctas {
+      flex-wrap: nowrap;
+      margin-top: 24px;
+    }
+    .ctas .btn-wa {
+      flex: 1;
+      padding-inline: 0.9rem;
+      font-size: 0.9375rem;
+    }
+    /* telefonul e deja în bara de jos pe mobil */
+    .ctas .btn-light {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .slide.is-active img,
+    .t.is-active {
+      animation: none;
+    }
+    .bar.is-active .fill::after {
+      animation: none;
+      transform: scaleX(1);
+    }
+  }
+</style>

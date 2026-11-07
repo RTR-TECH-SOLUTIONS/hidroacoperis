@@ -1,0 +1,40 @@
+---
+import Icon from './Icon.astro';
+import { site, waDefault } from '../data/site';
+---
+
+<div class="mobile-bar" aria-label="Contact rapid">
+  <a class="btn btn-line" href={site.phoneHref}><Icon name="phone" /> Sună</a>
+  <a class="btn btn-wa" href={waDefault} target="_blank" rel="noopener"><Icon name="whatsapp" /> WhatsApp</a>
+</div>
+
+<style>
+  .mobile-bar {
+    display: none;
+  }
+  @media (max-width: 720px) {
+    .mobile-bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 40;
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 8px;
+      padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+      background: var(--color-paper);
+      border-top: 1px solid var(--color-line);
+    }
+    .mobile-bar .btn {
+      min-height: 48px;
+      background-color: var(--color-paper);
+    }
+    .mobile-bar .btn-wa {
+      background-color: var(--color-wa);
+    }
+    :global(body) {
+      padding-bottom: calc(70px + env(safe-area-inset-bottom));
+    }
+  }
+</style>

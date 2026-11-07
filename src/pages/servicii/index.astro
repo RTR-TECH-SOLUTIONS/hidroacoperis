@@ -1,0 +1,18 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHead from '../../components/PageHead.astro';
+import Services from '../../components/Services.astro';
+import Problems from '../../components/Problems.astro';
+import CtaBand from '../../components/CtaBand.astro';
+---
+
+<Base title="Servicii" overlay description="Reparații de acoperiș, acoperișuri noi, țiglă metalică și ceramică, tablă fălțuită, jgheaburi, dulgherie și mansarde.">
+  <PageHead
+    title="Ce lucrăm"
+    lead="Cam jumătate din lucrările noastre sunt reparații, cealaltă jumătate acoperișuri întregi. Prețurile sunt de manoperă; materialul se socotește separat, după marca pe care o alegi."
+    crumbs={[{ href: '/servicii', label: 'Servicii' }]}
+  />
+  <Services showHead={false} />
+  <Problems />
+  <CtaBand />
+</Base>

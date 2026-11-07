@@ -1,0 +1,28 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Problems from '../components/Problems.astro';
+import Services from '../components/Services.astro';
+import PriceTeaser from '../components/PriceTeaser.astro';
+import Projects from '../components/Projects.astro';
+import Process from '../components/Process.astro';
+import Faq from '../components/Faq.astro';
+import Contact from '../components/Contact.astro';
+---
+
+<Base overlay>
+  <Hero />
+  <Problems />
+  <Services />
+  <PriceTeaser />
+  <Projects
+    limit={6}
+    filters={false}
+    more
+    title="Câteva lucrări"
+    lead="Apasă pe o lucrare ca să vezi toate pozele și ce am făcut acolo. Restul sunt pe pagina de lucrări."
+  />
+  <Process />
+  <Faq />
+  <Contact />
+</Base>

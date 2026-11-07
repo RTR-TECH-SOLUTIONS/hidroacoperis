@@ -1,0 +1,151 @@
+---
+import Icon from './Icon.astro';
+import { problems } from '../data/problems';
+import { waLink, u } from '../data/site';
+---
+
+<section class="section problems" id="probleme">
+  <div class="wrap grid">
+    <div class="side">
+      <h2 class="h-section">Ce se întâmplă cu acoperișul?</h2>
+      <p class="lead">
+        Alege ce se potrivește. Se deschide WhatsApp cu mesajul deja scris; tu adaugi 2–3 poze de afară și, dacă
+        poți, una din pod.
+      </p>
+      <figure class="figure">
+        <div class="photo">
+          <img
+            src={u('/img/reparatie-amanata.webp')}
+            width="1400"
+            height="933"
+            alt="Acoperiș vechi din țiglă cu o porțiune prăbușită și șipcile rupte la vedere"
+            loading="lazy"
+          />
+        </div>
+        <figcaption class="caption">
+          Așa arată o reparație amânată două ierni: țiglele mutate au lăsat apa pe șipci, iar șipcile au cedat.
+        </figcaption>
+      </figure>
+    </div>
+
+    <ul class="list">
+      {
+        problems.map((p) => (
+          <li>
+            <a href={waLink(p.message)} target="_blank" rel="noopener">
+              <span class="t">{p.title}</span>
+              <span class="d">{p.detail}</span>
+              <span class="go">
+                <Icon name="whatsapp" /> Scrie-ne despre asta
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .problems {
+    background: var(--color-surface);
+    border-block: 1px solid var(--color-line);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(32px, 6vw, 88px);
+    align-items: start;
+  }
+  .side {
+    position: sticky;
+    top: calc(var(--header-h) + 24px);
+  }
+  .lead {
+    margin-top: 18px;
+  }
+  .figure {
+    margin: 32px 0 0;
+  }
+  .figure .photo {
+    aspect-ratio: 3 / 2;
+  }
+  .figure .caption {
+    margin-top: 10px;
+  }
+  .list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 2px solid var(--color-ink);
+  }
+  .list li {
+    border-bottom: 1px solid var(--color-line);
+  }
+  .list a {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 4px 24px;
+    padding: 26px 4px;
+    text-decoration: none;
+    color: inherit;
+    transition: background-color 180ms ease-out, padding 180ms ease-out;
+  }
+  .list a:hover {
+    background: var(--color-paper);
+    padding-inline: 16px;
+  }
+  .t {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.25rem, 1.05rem + 0.8vw, 1.625rem);
+    color: var(--color-ink);
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+  }
+  .d {
+    grid-column: 1;
+    color: var(--color-body);
+    font-size: 1rem;
+  }
+  .go {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: center;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.9375rem;
+    color: var(--color-wa);
+    white-space: nowrap;
+  }
+  .go :global(svg) {
+    width: 20px;
+    height: 20px;
+  }
+
+  @media (max-width: 900px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+    .side {
+      position: static;
+    }
+  }
+  @media (max-width: 600px) {
+    .list a {
+      grid-template-columns: 1fr;
+      padding: 22px 0;
+    }
+    .list a:hover {
+      padding-inline: 0;
+    }
+    .go {
+      grid-column: 1;
+      grid-row: auto;
+      margin-top: 8px;
+    }
+  }
+</style>

@@ -1,0 +1,416 @@
+---
+import { u } from '../data/site';
+import Icon from './Icon.astro';
+import { projects as all, categories as allCats } from '../data/projects';
+
+interface Props {
+  title?: string;
+  lead?: string;
+  ids?: string[];
+  limit?: number;
+  filters?: boolean;
+  more?: boolean;
+  showHead?: boolean;
+}
+const {
+  title = 'Lucrări',
+  lead = 'Case, anexe și acoperișuri în lucru. Apasă pe o lucrare ca să vezi toate pozele și ce am făcut acolo.',
+  ids,
+  limit,
+  filters = true,
+  more = false,
+  showHead = true,
+} = Astro.props;
+
+let projects = ids ? all.filter((p) => ids.includes(p.id)) : all;
+if (limit) projects = projects.slice(0, limit);
+const counts = Object.fromEntries(
+  allCats.map((c) => [c.id, c.id === 'toate' ? projects.length : projects.filter((p) => p.category === c.id).length]),
+);
+const categories = allCats.filter((c) => c.id === 'toate' || counts[c.id] > 0);
+const ratio = { tall: '4 / 5', wide: '3 / 2', normal: '5 / 4' } as const;
+---
+
+<section class="section projects" id="lucrari">
+  <div class="wrap">
+    {
+      showHead && (
+        <div class="top">
+          <h2 class="h-section">{title}</h2>
+          <p class="lead">{lead}</p>
+        </div>
+      )
+    }
+
+    {
+      filters ? (
+        <div class="filters" role="group" aria-label="Filtrează lucrările">
+          {categories.map((c, i) => (
+            <button type="button" data-filter={c.id} aria-pressed={i === 0 ? 'true' : 'false'}>
+              {c.label} <span class="num">{counts[c.id]}</span>
+            </button>
+          ))}
+        </div>
+      ) : (
+        <div class="gap" />
+      )
+    }
+
+    <ul class="masonry" data-projects>
+      {
+        projects.map((p) => (
+          <li data-cat={p.category}>
+            <button type="button" class="card" data-open={p.id}>
+              <span class="photo" style={`aspect-ratio:${ratio[p.size]}`}>
+                <img src={p.photos[0].src} width={p.photos[0].w} height={p.photos[0].h} alt={p.photos[0].alt} loading="lazy" />
+                {p.status === 'în lucru' && <span class="status">în lucru</span>}
+                {p.photos.length > 1 && <span class="count num">{p.photos.length} poze</span>}
+              </span>
+              <span class="title">{p.title}</span>
+              <span class="meta num">{p.meta.join(' · ')}</span>
+            </button>
+          </li>
+        ))
+      }
+    </ul>
+    {
+      more && (
+        <a class="btn btn-line more" href={u('/lucrari')}>
+          Vezi toate lucrările <Icon name="chevron-right" />
+        </a>
+      )
+    }
+  </div>
+
+  <dialog class="lightbox" data-lightbox aria-labelledby="lb-title">
+    <div class="lb-inner">
+      <div class="lb-media">
+        <img data-lb-img src="" alt="" />
+        <button type="button" class="lb-nav prev" data-lb-prev aria-label="Poza anterioară"><Icon name="chevron-left" /></button>
+        <button type="button" class="lb-nav next" data-lb-next aria-label="Poza următoare"><Icon name="chevron-right" /></button>
+      </div>
+      <div class="lb-text">
+        <p class="lb-count num" data-lb-count></p>
+        <h3 id="lb-title" data-lb-title></h3>
+        <p class="lb-meta num" data-lb-meta></p>
+        <p class="lb-note" data-lb-note></p>
+      </div>
+      <button type="button" class="lb-close" data-lb-close aria-label="Închide"><Icon name="close" /></button>
+    </div>
+  </dialog>
+  <script type="application/json" id="projects-data" set:html={JSON.stringify(projects)} />
+</section>
+
+<script>
+  type Photo = { src: string; w: number; h: number; alt: string };
+  type Project = { id: string; title: string; meta: string[]; note: string; year: number; status: string; photos: Photo[] };
+
+  const projects: Project[] = JSON.parse(document.getElementById('projects-data')?.textContent || '[]');
+  const list = document.querySelector('[data-projects]');
+  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+
+  buttons.forEach((b) =>
+    b.addEventListener('click', () => {
+      const f = b.dataset.filter;
+      buttons.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      list?.querySelectorAll<HTMLLIElement>('li').forEach((li) => {
+        li.hidden = f !== 'toate' && li.dataset.cat !== f;
+      });
+    }),
+  );
+
+  const dlg = document.querySelector<HTMLDialogElement>('[data-lightbox]');
+  const img = dlg?.querySelector<HTMLImageElement>('[data-lb-img]');
+  const prev = dlg?.querySelector<HTMLButtonElement>('[data-lb-prev]');
+  const next = dlg?.querySelector<HTMLButtonElement>('[data-lb-next]');
+  let current: Project | undefined;
+  let idx = 0;
+
+  const show = () => {
+    if (!dlg || !img || !current) return;
+    const ph = current.photos[idx];
+    img.src = ph.src;
+    img.alt = ph.alt;
+    img.width = ph.w;
+    img.height = ph.h;
+    const many = current.photos.length > 1;
+    if (prev) prev.hidden = !many;
+    if (next) next.hidden = !many;
+    dlg.querySelector('[data-lb-count]')!.textContent = many
+      ? `Poza ${idx + 1} din ${current.photos.length} · ${current.year}`
+      : String(current.year);
+    dlg.querySelector('[data-lb-title]')!.textContent = current.title;
+    dlg.querySelector('[data-lb-meta]')!.textContent = current.meta.join(' · ');
+    dlg.querySelector('[data-lb-note]')!.textContent = current.note;
+  };
+  const step = (d: number) => {
+    if (!current) return;
+    idx = (idx + d + current.photos.length) % current.photos.length;
+    show();
+  };
+
+  document.querySelectorAll<HTMLButtonElement>('[data-open]').forEach((b) =>
+    b.addEventListener('click', () => {
+      current = projects.find((p) => p.id === b.dataset.open);
+      idx = 0;
+      show();
+      dlg?.showModal();
+    }),
+  );
+  prev?.addEventListener('click', () => step(-1));
+  next?.addEventListener('click', () => step(1));
+  dlg?.querySelector('[data-lb-close]')?.addEventListener('click', () => dlg.close());
+  dlg?.addEventListener('click', (e) => {
+    if (e.target === dlg) dlg.close();
+  });
+  dlg?.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') step(-1);
+    if (e.key === 'ArrowRight') step(1);
+  });
+</script>
+
+<style>
+  .projects {
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-line);
+  }
+  .top {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(24px, 5vw, 72px);
+    align-items: end;
+  }
+  .gap {
+    height: clamp(28px, 4vw, 44px);
+  }
+  .more {
+    margin-top: 8px;
+  }
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: clamp(28px, 4vw, 44px) 0 clamp(24px, 3vw, 36px);
+  }
+  .filters button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 16px;
+    border: 2px solid var(--color-line-strong);
+    border-radius: var(--radius);
+    background: transparent;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.9375rem;
+    color: var(--color-ink);
+    cursor: pointer;
+    transition: border-color 160ms ease-out, background-color 160ms ease-out, color 160ms ease-out;
+  }
+  .filters button span {
+    color: var(--color-muted);
+    font-weight: 500;
+  }
+  .filters button:hover {
+    border-color: var(--color-ink);
+  }
+  .filters button[aria-pressed='true'] {
+    background: var(--color-ink);
+    border-color: var(--color-ink);
+    color: #fff;
+  }
+  .filters button[aria-pressed='true'] span {
+    color: #aeb8c6;
+  }
+
+  .masonry {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    columns: 3 300px;
+    column-gap: clamp(16px, 2.4vw, 28px);
+  }
+  .masonry li {
+    break-inside: avoid;
+    margin-bottom: clamp(24px, 3vw, 36px);
+  }
+  .card {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    font: inherit;
+    color: inherit;
+  }
+  .card .photo {
+    position: relative;
+    display: block;
+  }
+  .card img {
+    transition: transform 400ms ease-out;
+  }
+  .card:hover img {
+    transform: scale(1.03);
+  }
+  .status,
+  .count {
+    position: absolute;
+    top: 12px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    padding: 4px 9px;
+    border-radius: 5px;
+    background: rgb(11 20 36 / 0.82);
+    color: #fff;
+  }
+  .status {
+    left: 12px;
+    background: var(--color-accent);
+  }
+  .count {
+    right: 12px;
+  }
+  .title {
+    display: block;
+    margin-top: 14px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.125rem;
+    line-height: 1.3;
+    color: var(--color-ink);
+  }
+  .card:hover .title {
+    text-decoration: underline;
+    text-decoration-color: var(--color-accent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+  }
+  .meta {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.9375rem;
+    color: var(--color-muted);
+  }
+
+  .lightbox {
+    width: min(1120px, calc(100vw - 32px));
+    max-height: calc(100dvh - 32px);
+    overflow: auto;
+    margin: auto;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    color: var(--color-body);
+  }
+  .lightbox::backdrop {
+    background: rgb(11 20 36 / 0.86);
+  }
+  .lb-inner {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  }
+  .lb-media {
+    position: relative;
+    background: var(--color-slate);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 320px;
+  }
+  .lb-media img {
+    width: 100%;
+    height: min(76dvh, 720px);
+    object-fit: contain;
+  }
+  .lb-nav {
+    position: absolute;
+    top: 50%;
+    translate: 0 -50%;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius);
+    border: 0;
+    background: rgb(255 255 255 / 0.92);
+    color: var(--color-ink);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .lb-nav[hidden] {
+    display: none;
+  }
+  .lb-nav :global(svg) {
+    width: 24px;
+    height: 24px;
+  }
+  .lb-nav.prev {
+    left: 12px;
+  }
+  .lb-nav.next {
+    right: 12px;
+  }
+  .lb-text {
+    padding: clamp(24px, 3vw, 40px);
+    padding-right: 64px;
+  }
+  .lb-count {
+    font-size: 0.875rem;
+    color: var(--color-muted);
+  }
+  .lb-text h3 {
+    margin-top: 10px;
+    font-size: clamp(1.375rem, 1.2rem + 0.8vw, 1.75rem);
+  }
+  .lb-meta {
+    margin-top: 12px;
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+  .lb-note {
+    margin-top: 14px;
+  }
+  .lb-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius);
+    border: 0;
+    background: var(--color-paper);
+    color: var(--color-ink);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .lb-close :global(svg) {
+    width: 22px;
+    height: 22px;
+  }
+
+  @media (max-width: 860px) {
+    .top {
+      grid-template-columns: 1fr;
+    }
+    .lb-inner {
+      grid-template-columns: 1fr;
+    }
+    .lb-media img {
+      height: min(56dvh, 520px);
+    }
+    .lb-text {
+      padding-right: clamp(24px, 3vw, 40px);
+    }
+    .lb-close {
+      background: rgb(255 255 255 / 0.92);
+    }
+  }
+</style>

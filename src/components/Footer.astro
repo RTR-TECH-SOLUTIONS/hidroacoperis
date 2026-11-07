@@ -1,0 +1,117 @@
+---
+import Logo from './Logo.astro';
+import { site, u } from '../data/site';
+import { services } from '../data/services';
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="wrap grid">
+    <div>
+      <Logo tone="light" />
+      <p class="about">
+        Reparații de acoperiș, acoperișuri noi și înlocuiri. Țiglă metalică, țiglă ceramică, tablă fălțuită,
+        jgheaburi, dulgherie și mansarde.
+      </p>
+      <p class="contact">
+        <a href={site.phoneHref} class="num phone">{site.phoneDisplay}</a>
+        <span>{site.hours}</span>
+      </p>
+    </div>
+    <div>
+      <p class="h">Servicii</p>
+      <ul>
+        {services.map((s) => <li><a href={u(`/servicii/${s.slug}`)}>{s.name}</a></li>)}
+      </ul>
+    </div>
+    <div>
+      <p class="h">Site</p>
+      <ul>
+        <li><a href={u('/')}>Acasă</a></li>
+        <li><a href={u('/lucrari')}>Lucrări</a></li>
+        <li><a href={u('/preturi')}>Prețuri</a></li>
+        <li><a href={u('/despre')}>Despre noi</a></li>
+        <li><a href={u('/contact')}>Contact</a></li>
+        <li><a href={`https://wa.me/${site.whatsapp}`} target="_blank" rel="noopener">WhatsApp</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="wrap legal">
+    <p>© {year} {site.name}</p>
+    <p>Prețurile de pe site sunt orientative și nu reprezintă o ofertă fermă.</p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: #0b1424;
+    color: #a7b2c2;
+    padding-block: clamp(48px, 6vw, 72px) 28px;
+    font-size: 0.9375rem;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 1.6fr 1.2fr 0.8fr;
+    gap: 40px;
+  }
+  .about {
+    margin-top: 18px;
+    max-width: 44ch;
+  }
+  .contact {
+    margin-top: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .phone {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: var(--color-accent-bright) !important;
+  }
+  .h {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+  a {
+    color: #e1e7ef;
+    text-decoration: none;
+  }
+  a:hover {
+    color: var(--color-accent-bright);
+  }
+  .legal {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px 24px;
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid #223149;
+    font-size: 0.8125rem;
+    color: #8592a5;
+  }
+  @media (max-width: 860px) {
+    .grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .grid > div:first-child {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (max-width: 480px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

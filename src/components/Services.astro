@@ -1,0 +1,247 @@
+---
+import { u } from '../data/site';
+import Icon from './Icon.astro';
+import { services } from '../data/services';
+
+interface Props {
+  title?: string;
+  lead?: string;
+  /** pe /servicii nu mai repetăm titlul (îl are capul paginii) */
+  showHead?: boolean;
+}
+const {
+  title = 'Ce lucrăm',
+  lead = 'Cam jumătate din lucrările noastre sunt reparații, cealaltă jumătate acoperișuri întregi. Prețurile de mai jos sunt de manoperă; materialul se socotește separat, după ce alegi marca.',
+  showHead = true,
+} = Astro.props;
+const featured = services.filter((s) => s.featured);
+const others = services.filter((s) => !s.featured);
+---
+
+<section class="section services" id="servicii">
+  <div class="wrap">
+    {
+      showHead && (
+        <div class="top">
+          <h2 class="h-section">{title}</h2>
+          <p class="lead">{lead}</p>
+        </div>
+      )
+    }
+
+    <div class="main">
+      {
+        featured.map((s, i) => (
+          <a class:list={['feature', i === 1 && 'offset']} href={u(`/servicii/${s.slug}`)}>
+            <span class="photo">
+              <img src={s.card.src} width={s.card.w} height={s.card.h} alt={s.card.alt} loading="lazy" />
+            </span>
+            <span class="body">
+              <span class="h">{s.name}</span>
+              <span class="p">{s.intro[0]}</span>
+              <span class="meta">
+                <span class="price num">{s.price}</span>
+                <span class="more">
+                  Vezi detalii <Icon name="chevron-right" />
+                </span>
+              </span>
+            </span>
+          </a>
+        ))
+      }
+    </div>
+
+    <h3 class="sub">Și pe bucăți</h3>
+    <ul class="pricelist">
+      {
+        others.map((s) => (
+          <li>
+            <a href={u(`/servicii/${s.slug}`)}>
+              <span class="thumb photo">
+                <img src={s.card.src} width={s.card.w} height={s.card.h} alt={s.card.alt} loading="lazy" />
+              </span>
+              <span class="info">
+                <span class="name">{s.name}</span>
+                <span class="detail">{s.short}</span>
+              </span>
+              <span class="price num">{s.price}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .top {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(24px, 5vw, 72px);
+    align-items: end;
+    margin-bottom: clamp(36px, 5vw, 64px);
+  }
+  .main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(24px, 4vw, 56px);
+    align-items: start;
+  }
+  .feature {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+  .feature .photo {
+    display: block;
+    aspect-ratio: 3 / 2;
+  }
+  .feature img {
+    transition: transform 400ms ease-out;
+  }
+  .feature:hover img {
+    transform: scale(1.03);
+  }
+  .feature.offset {
+    margin-top: clamp(0px, 6vw, 72px);
+  }
+  .body {
+    display: block;
+    padding-top: 22px;
+    max-width: 54ch;
+  }
+  .h {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--color-ink);
+  }
+  .feature:hover .h {
+    text-decoration: underline;
+    text-decoration-color: var(--color-accent);
+    text-decoration-thickness: 3px;
+    text-underline-offset: 6px;
+  }
+  .p {
+    display: block;
+    margin-top: 10px;
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px 20px;
+    margin-top: 14px;
+  }
+  .feature .price {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--color-accent);
+  }
+  .more {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--color-ink);
+  }
+  .more :global(svg) {
+    width: 18px;
+    height: 18px;
+  }
+
+  .sub {
+    font-size: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+    margin-top: clamp(56px, 7vw, 88px);
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--color-ink);
+  }
+  .pricelist {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: clamp(24px, 4vw, 56px);
+  }
+  .pricelist li {
+    border-bottom: 1px solid var(--color-line);
+  }
+  .pricelist a {
+    display: grid;
+    grid-template-columns: 88px 1fr auto;
+    gap: 18px;
+    align-items: center;
+    padding: 18px 0;
+    text-decoration: none;
+    color: inherit;
+  }
+  .thumb {
+    display: block;
+    width: 88px;
+    aspect-ratio: 1;
+    border-radius: 6px;
+  }
+  .info {
+    display: block;
+  }
+  .name {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--color-ink);
+    font-size: 1.0625rem;
+    line-height: 1.25;
+  }
+  .pricelist a:hover .name {
+    color: var(--color-accent);
+  }
+  .detail {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+  .pricelist .price {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--color-ink);
+    white-space: nowrap;
+    font-size: 0.9875rem;
+    align-self: start;
+    padding-top: 2px;
+  }
+
+  @media (max-width: 1000px) {
+    .pricelist {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 860px) {
+    .top,
+    .main {
+      grid-template-columns: 1fr;
+    }
+    .feature.offset {
+      margin-top: 0;
+    }
+  }
+  @media (max-width: 520px) {
+    .pricelist a {
+      grid-template-columns: 72px 1fr;
+    }
+    .thumb {
+      width: 72px;
+    }
+    .pricelist .price {
+      grid-column: 2;
+      padding-top: 0;
+      margin-top: -8px;
+      color: var(--color-accent);
+    }
+  }
+</style>

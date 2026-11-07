@@ -1,0 +1,17 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import Projects from '../components/Projects.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { projects } from '../data/projects';
+---
+
+<Base title="Lucrări" overlay description="Acoperișuri noi, înlocuiri, reparații, dulgherie și mansarde: lucrări făcute, cu poze și detalii.">
+  <PageHead
+    title="Lucrări"
+    lead={`${projects.length} lucrări, de la o coamă refăcută într-o zi până la acoperișuri întregi. Apasă pe oricare ca să vezi toate pozele și ce am făcut acolo.`}
+    crumbs={[{ href: '/lucrari', label: 'Lucrări' }]}
+  />
+  <Projects showHead={false} />
+  <CtaBand title="Ai o lucrare asemănătoare?" />
+</Base>

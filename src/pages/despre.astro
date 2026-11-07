@@ -1,0 +1,78 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import Process from '../components/Process.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { site, u } from '../data/site';
+// TODO(real): povestea reală a firmei, de la Ștefan: de când lucrează, câți oameni are, zona.
+---
+
+<Base title="Despre noi" overlay description={`${site.name}: echipa, cum lucrăm și ce scrie în contract.`}>
+  <PageHead
+    title="Despre noi"
+    lead="O echipă mică de acoperișari. Cel care îți dă prețul e și cel care urcă pe acoperiș."
+    crumbs={[{ href: '/despre', label: 'Despre noi' }]}
+  />
+
+  <section class="section story">
+    <div class="wrap grid">
+      <figure class="figure">
+        <div class="photo">
+          <img src={u('/img/hero-reparatie.webp')} width="1920" height="1280" alt="Doi acoperișari care lucrează pe un acoperiș din țiglă" loading="lazy" />
+        </div>
+      </figure>
+      <div class="text">
+        <h2 class="h-section">Un acoperiș o dată</h2>
+        <p class="first">
+          Lucrăm pe un singur șantier o dată. Nu lăsăm un acoperiș desfăcut ca să începem altul, și nu trimitem
+          pe nimeni pe care nu l-ai văzut la măsurători.
+        </p>
+        <p>
+          Am început cu reparații: țigle mutate de vânt, coșuri care lăsau apă, jgheaburi rupte de zăpadă. De
+          acolo am învățat unde cedează un acoperiș, și asta folosim acum și la cele noi.
+        </p>
+        <p>
+          Montăm învelitori de la {site.brands.join(', ')}, după instrucțiunile fiecărui producător, ca garanția
+          materialului să rămână valabilă.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <Process />
+  <CtaBand />
+</Base>
+
+<style>
+  .story {
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-line);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
+    gap: clamp(32px, 6vw, 88px);
+    align-items: center;
+  }
+  .figure {
+    margin: 0;
+  }
+  .figure .photo {
+    aspect-ratio: 4 / 3;
+  }
+  .text p {
+    margin-top: 16px;
+    max-width: 58ch;
+  }
+  .text .first {
+    margin-top: 22px;
+    font-size: clamp(1.125rem, 1rem + 0.5vw, 1.375rem);
+    line-height: 1.5;
+    color: var(--color-ink);
+  }
+  @media (max-width: 860px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

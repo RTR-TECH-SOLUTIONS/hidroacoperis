@@ -1,0 +1,292 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { site, waDefault, u } from '../data/site';
+import { services } from '../data/services';
+
+const nav = [
+  { href: '/servicii', label: 'Servicii' },
+  { href: '/lucrari', label: 'Lucrări' },
+  { href: '/preturi', label: 'Prețuri' },
+  { href: '/despre', label: 'Despre noi' },
+  { href: '/contact', label: 'Contact' },
+];
+interface Props {
+  overlay?: boolean;
+}
+const { overlay = false } = Astro.props;
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+const path = Astro.url.pathname.replace(basePath, '').replace(/\/$/, '') || '/';
+const isActive = (href: string) => path === href || path.startsWith(`${href}/`);
+---
+
+<header class:list={['site-header', overlay && 'is-overlay']} data-header>
+  <div class="wrap bar">
+    <Logo />
+    <nav class="nav" aria-label="Meniu principal">
+      <ul>
+        {
+          nav.map((n) => (
+            <li>
+              <a href={u(n.href)} aria-current={isActive(n.href) ? 'page' : undefined}>
+                {n.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    <div class="actions">
+      <a class="btn btn-ink phone" href={site.phoneHref}>
+        <Icon name="phone" />
+        <span class="num">{site.phoneDisplay}</span>
+      </a>
+      <button class="burger" type="button" aria-expanded="false" aria-controls="mobile-menu" data-burger>
+        <span class="sr-only" data-burger-label>Deschide meniul</span>
+        <Icon name="menu" class="i-open" />
+        <Icon name="close" class="i-close" />
+      </button>
+    </div>
+  </div>
+
+  <div id="mobile-menu" class="mobile-menu" hidden data-menu>
+    <div class="wrap">
+      <ul class="m-main">
+        <li><a href={u('/')} aria-current={path === '/' ? 'page' : undefined}>Acasă</a></li>
+        {
+          nav.map((n) => (
+            <li>
+              <a href={u(n.href)} aria-current={isActive(n.href) ? 'page' : undefined}>
+                {n.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="m-h">Servicii</p>
+      <ul class="m-sub">
+        {services.map((s) => <li><a href={u(`/servicii/${s.slug}`)}>{s.name}</a></li>)}
+      </ul>
+      <div class="m-ctas">
+        <a class="btn btn-wa" href={waDefault} target="_blank" rel="noopener"><Icon name="whatsapp" /> WhatsApp</a>
+        <a class="btn btn-line" href={site.phoneHref}><Icon name="phone" /> <span class="num">{site.phoneDisplay}</span></a>
+      </div>
+      <p class="hours">{site.hours}</p>
+    </div>
+  </div>
+</header>
+
+<script>
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  const burger = document.querySelector<HTMLButtonElement>('[data-burger]');
+  const burgerLabel = document.querySelector('[data-burger-label]');
+  const menu = document.querySelector<HTMLElement>('[data-menu]');
+  // Peste hero-ul pe tot ecranul, header-ul e transparent (ca logo-ul peste clip în reel).
+  const hero = document.querySelector<HTMLElement>('[data-overlay-hero]');
+
+  const onScroll = () => {
+    if (!header) return;
+    const y = window.scrollY;
+    const open = header.classList.contains('is-open');
+    header.classList.toggle('is-scrolled', y > 8);
+    const overHero = !!hero && y < hero.offsetHeight - header.offsetHeight - 8;
+    header.classList.toggle('is-overlay', overHero && !open);
+  };
+
+  const setOpen = (open: boolean) => {
+    if (!burger || !menu || !header) return;
+    burger.setAttribute('aria-expanded', String(open));
+    if (burgerLabel) burgerLabel.textContent = open ? 'Închide meniul' : 'Deschide meniul';
+    menu.hidden = !open;
+    header.classList.toggle('is-open', open);
+    document.documentElement.style.overflow = open ? 'hidden' : '';
+    onScroll();
+  };
+
+  burger?.addEventListener('click', () => setOpen(burger.getAttribute('aria-expanded') !== 'true'));
+  menu?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') setOpen(false);
+  });
+  window.matchMedia('(min-width: 960px)').addEventListener('change', (e) => {
+    if (e.matches) setOpen(false);
+  });
+
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+</script>
+
+<style>
+  /* fără backdrop-filter: ar face din header containerul meniului mobil (position: fixed) și l-ar strivi */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--color-paper);
+    border-bottom: 1px solid var(--color-line);
+    transition: border-color 180ms ease-out, background-color 180ms ease-out;
+  }
+  .site-header.is-overlay {
+    background: transparent;
+    border-bottom-color: rgb(255 255 255 / 0.16);
+  }
+  .is-overlay :global(.logo) {
+    color: #fff;
+    --eave: var(--color-accent-bright);
+  }
+  .bar {
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .nav ul {
+    display: flex;
+    gap: clamp(18px, 2.4vw, 34px);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav a {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.9875rem;
+    color: var(--color-ink);
+    text-decoration: none;
+    padding-block: 8px;
+    background: linear-gradient(var(--color-accent), var(--color-accent)) no-repeat left bottom / 0 2px;
+    transition: background-size 200ms ease-out;
+  }
+  .nav a:hover,
+  .nav a[aria-current='page'] {
+    background-size: 100% 2px;
+  }
+  .is-overlay .nav a {
+    color: #fff;
+    background-image: linear-gradient(var(--color-accent-bright), var(--color-accent-bright));
+  }
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .phone {
+    min-height: 46px;
+    padding-inline: 1.1rem;
+  }
+  .is-overlay .phone {
+    background: #fff;
+    color: var(--color-ink);
+  }
+  .burger {
+    display: none;
+    width: 46px;
+    height: 46px;
+    border-radius: var(--radius);
+    border: 2px solid var(--color-ink);
+    background: transparent;
+    color: var(--color-ink);
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .is-overlay .burger {
+    border-color: rgb(255 255 255 / 0.7);
+    color: #fff;
+  }
+  .burger :global(svg) {
+    width: 22px;
+    height: 22px;
+  }
+  .burger :global(.i-close) {
+    display: none;
+  }
+  .is-open .burger :global(.i-open) {
+    display: none;
+  }
+  .is-open .burger :global(.i-close) {
+    display: block;
+  }
+
+  .mobile-menu {
+    position: fixed;
+    top: var(--header-h);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 49;
+    background: var(--color-paper);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 8px 0 32px;
+  }
+  .mobile-menu[hidden] {
+    display: none;
+  }
+  .mobile-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .m-main a {
+    display: block;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--color-line);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--color-ink);
+    text-decoration: none;
+  }
+  .m-main a[aria-current='page'] {
+    color: var(--color-accent);
+  }
+  .m-h {
+    margin-top: 24px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--color-muted);
+    font-size: 0.9375rem;
+  }
+  .m-sub {
+    margin-top: 6px !important;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 16px;
+  }
+  .m-sub a {
+    display: block;
+    padding: 9px 0;
+    color: var(--color-ink);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9375rem;
+    line-height: 1.35;
+  }
+  .m-ctas {
+    display: grid;
+    gap: 10px;
+    margin-top: 24px;
+  }
+  .hours {
+    margin-top: 16px;
+    color: var(--color-muted);
+    font-size: 0.9375rem;
+  }
+
+  @media (max-width: 959px) {
+    .nav {
+      display: none;
+    }
+    .burger {
+      display: inline-flex;
+    }
+  }
+  @media (max-width: 520px) {
+    .phone {
+      display: none;
+    }
+  }
+</style>

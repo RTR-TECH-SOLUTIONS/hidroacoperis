@@ -1,0 +1,73 @@
+---
+import Icon from './Icon.astro';
+import { site, waDefault } from '../data/site';
+interface Props {
+  title?: string;
+  text?: string;
+}
+const {
+  title = 'Trimite-ne 2–3 poze cu acoperișul',
+  text = 'Îți spunem ce e de făcut și în ce interval de preț intră, de obicei în aceeași zi.',
+} = Astro.props;
+---
+
+<section class="cta">
+  <div class="wrap inner">
+    <div>
+      <h2>{title}</h2>
+      <p>{text}</p>
+    </div>
+    <div class="actions">
+      <a class="btn btn-wa" href={waDefault} target="_blank" rel="noopener"><Icon name="whatsapp" /> Scrie-ne pe WhatsApp</a>
+      <a class="phone num" href={site.phoneHref}>{site.phoneDisplay}</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta {
+    background: var(--color-slate);
+    color: var(--color-slate-text);
+    padding-block: clamp(48px, 7vw, 88px);
+  }
+  .inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    gap: 32px;
+    align-items: center;
+  }
+  h2 {
+    color: #fff;
+    font-size: clamp(1.75rem, 1.2rem + 2.2vw, 2.75rem);
+  }
+  p {
+    margin-top: 12px;
+    max-width: 52ch;
+  }
+  .actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    justify-self: end;
+  }
+  .phone {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.75rem, 1.3rem + 1.6vw, 2.5rem);
+    color: var(--color-accent-bright);
+    text-decoration: none;
+    letter-spacing: -0.02em;
+  }
+  .phone:hover {
+    color: #fff;
+  }
+  @media (max-width: 800px) {
+    .inner {
+      grid-template-columns: 1fr;
+    }
+    .actions {
+      justify-self: start;
+    }
+  }
+</style>

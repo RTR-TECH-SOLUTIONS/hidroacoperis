@@ -1,0 +1,128 @@
+---
+import { u } from '../data/site';
+const repair = [
+  'țiglele sparte sau mutate sunt pe o porțiune mică, sub o cincime din acoperiș',
+  'șarpanta e sănătoasă: căpriorii nu sunt moi la șurubelniță și nu s-au lăsat',
+  'acoperișul are folie, iar apa intră doar pe la coș, coamă sau o fereastră',
+  'tabla e prinsă bine și rugina e doar la suprafață, nu a găurit-o',
+];
+const replace = [
+  'țigla e veche de peste 40 de ani și se sparge când calci pe ea',
+  'nu există folie deloc și intră apă în mai multe locuri, la fiecare ploaie',
+  'găsim lemn putred în mai mulți căpriori sau astereala s-a făcut burete',
+  'reparațiile din ultimii ani adunate ajung la o treime din prețul unui acoperiș nou',
+];
+---
+
+<section class="section ror">
+  <div class="wrap">
+    <div class="top">
+      <h2 class="h-section">Se repară sau se schimbă?</h2>
+      <p class="lead">
+        Prima întrebare pe care ne-o pune oricine. Nu vindem un acoperiș nou cui are nevoie de o reparație de
+        800 de lei, și nici nu cârpim un acoperiș care o să curgă din nou la anul. Ne uităm după lucrurile astea:
+      </p>
+    </div>
+
+    <div class="cols">
+      <div class="col">
+        <h3>Merită reparat dacă</h3>
+        <ul>{repair.map((r) => <li>{r}</li>)}</ul>
+      </div>
+      <div class="col">
+        <h3>Merită schimbat dacă</h3>
+        <ul>{replace.map((r) => <li>{r}</li>)}</ul>
+      </div>
+      <figure class="figure">
+        <div class="photo">
+          <img
+            src={u('/img/tigla-veche-noua.webp')}
+            width="787"
+            height="1400"
+            alt="Țiglă ceramică nouă, portocalie, montată lângă țigla veche, gri de vreme"
+            loading="lazy"
+          />
+        </div>
+        <figcaption class="caption">
+          Uneori răspunsul e la mijloc: apa dinspre stradă se schimbă, cealaltă se mai reface peste câțiva ani.
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<style>
+  .ror {
+    background: var(--color-slate);
+    color: var(--color-slate-text);
+  }
+  .ror h2,
+  .ror h3 {
+    color: #fff;
+  }
+  .ror .lead {
+    color: var(--color-slate-text);
+  }
+  .top {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(24px, 5vw, 72px);
+    align-items: end;
+  }
+  .cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr minmax(0, 0.8fr);
+    gap: clamp(24px, 4vw, 56px);
+    margin-top: clamp(40px, 6vw, 72px);
+    align-items: start;
+  }
+  .col h3 {
+    font-size: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--color-accent-bright);
+  }
+  .col:nth-child(2) h3 {
+    border-bottom-color: var(--color-slate-text);
+  }
+  .col ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .col li {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--color-slate-line);
+    line-height: 1.55;
+  }
+  .figure {
+    margin: 0;
+  }
+  .figure .photo {
+    aspect-ratio: 3 / 4;
+    background: var(--color-slate-2);
+  }
+  .figure .caption {
+    margin-top: 10px;
+    color: #93a0b3;
+  }
+
+  @media (max-width: 1000px) {
+    .top {
+      grid-template-columns: 1fr;
+    }
+    .cols {
+      grid-template-columns: 1fr 1fr;
+    }
+    .figure {
+      grid-column: 1 / -1;
+    }
+    .figure .photo {
+      aspect-ratio: 16 / 9;
+    }
+  }
+  @media (max-width: 640px) {
+    .cols {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

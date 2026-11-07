@@ -1,0 +1,18 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import Estimator from '../components/Estimator.astro';
+import RepairOrReplace from '../components/RepairOrReplace.astro';
+import CtaBand from '../components/CtaBand.astro';
+---
+
+<Base title="Prețuri" overlay description="Calculator de preț pentru acoperiș: suprafața, manopera și materialul pe mărci, plus reparații socotite pe bucată.">
+  <PageHead
+    title="Cât costă acoperișul tău"
+    lead="Răspunzi la patru întrebări și primești devizul: suprafața, manopera și materialul, pe marca pe care o vrei. Reparațiile le socotim pe bucată."
+    crumbs={[{ href: '/preturi', label: 'Prețuri' }]}
+  />
+  <Estimator />
+  <RepairOrReplace />
+  <CtaBand title="Vrei prețul exact?" text="Trimite-ne 2–3 poze și dimensiunile casei. Venim, măsurăm și îți dăm devizul scris, pe rânduri." />
+</Base>

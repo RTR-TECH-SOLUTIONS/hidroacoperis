@@ -1,0 +1,87 @@
+---
+import Icon from './Icon.astro';
+import { faq } from '../data/faq';
+---
+
+<section class="section faq" id="intrebari">
+  <div class="wrap grid">
+    <h2 class="h-section">Ce ne întreabă oamenii</h2>
+    <div class="list">
+      {
+        faq.map((f) => (
+          <details>
+            <summary>
+              <span>{f.q}</span>
+              <Icon name="plus" class="ico" />
+            </summary>
+            <p>{f.a}</p>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .faq {
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-line);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(24px, 6vw, 88px);
+    align-items: start;
+  }
+  .list {
+    border-top: 2px solid var(--color-ink);
+  }
+  details {
+    border-bottom: 1px solid var(--color-line);
+  }
+  summary {
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 22px 0;
+    cursor: pointer;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.0625rem, 1rem + 0.4vw, 1.25rem);
+    color: var(--color-ink);
+    line-height: 1.3;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  summary :global(.ico) {
+    width: 24px;
+    height: 24px;
+    flex: none;
+    color: var(--color-accent);
+    transition: transform 200ms ease-out;
+  }
+  details[open] summary :global(.ico) {
+    transform: rotate(45deg);
+  }
+  summary:hover span {
+    text-decoration: underline;
+    text-decoration-color: var(--color-accent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+  }
+  details p {
+    padding: 0 48px 24px 0;
+    max-width: 66ch;
+  }
+  @media (max-width: 860px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+    details p {
+      padding-right: 0;
+    }
+  }
+</style>
